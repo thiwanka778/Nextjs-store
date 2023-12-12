@@ -1,0 +1,64 @@
+.edit-store{
+    padding:0.5rem;
+    width:100%;
+}
+
+.store-card{
+    margin: 1rem;
+    width:400px;
+    display: flex;
+    flex-direction: column;
+    padding:0.5rem;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.edit-store-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(405px,1fr));
+}
+
+@media screen and (max-width: 599px) {
+    .edit-store-container{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+    }
+    .store-card{
+        width:100%;
+    }
+  }
+  .update-input-box-title{
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color:#4061f5;
+  }
+
+  .custom-upload{
+    width:100%;
+    border:1px dashed #a0a0a3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding:1rem;
+    border-radius: 10px;
+    background-color: #f5f5f7;
+    cursor: pointer;
+  }
+  .custom-upload:hover{
+    border:1px dashed #6353f5;
+  }
+  .ant-upload-text{
+     text-align: center;
+     font-size: 1.2rem;
+  }
+  .ant-upload-hint{
+    text-align: center;
+    font-size: 1rem;
+    color:#9e9da1;
+  }

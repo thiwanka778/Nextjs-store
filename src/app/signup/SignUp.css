@@ -1,13 +1,4 @@
-
-  @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&family=Ubuntu&display=swap');
-
-  *{
-    margin:0;
-    padding: 0;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-  }
-  .login-page{
+.signup-page{
     width:100;
     min-height: 100vh;
     background-color: #3a7bf2;
@@ -16,12 +7,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
 
-  }
-
-  .login-box{
+.signup-box{
     width:400px;
-    
     padding: 2rem;
     background-color: white;
     border-radius: 10px;
@@ -30,70 +19,29 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-  }
-.login-box-input{
-   width:300px;
 }
-.input-box {
-  width: 100%;
-  padding: 1rem;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  outline: none;
-  transition: 0.3s;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-  font-size: 1.2rem;
+.signup-box-input{
+    width:300px;
 }
 
-.input-box:focus {
-  box-shadow: #186cf2 0px 2px 8px 0px;
+@media (max-width: 450px) {
+    .signup-box {
+      width: 100%;
+    }
+   
+  }
   
-}
-
-.login-button {
-  font-family: 'Poppins', sans-serif;
-  display: inline-block;
-  padding: 10px 16px;
-  font-size: 1rem;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  border-radius: 8px;
-  width:100%;
-  color: #fff;
-  background-color: #007bff; /* Primary color, you can change this */
-  transition: all 0.3s ease;
-}
-
-.login-button:hover {
-  background-color: #0056b3; /* Darker shade on hover, adjust as needed */
-}
-
-.login-button:active {
-  transform: scale(0.8); /* Slight scale down when button is pressed */
-}
-
-@media (max-width: 450px) {
-  .login-box {
-    width: 100%;
+  @media (max-width: 450px) {
+    .signup-box-input {
+      width: 100%;
+    }
   }
- 
-}
 
-@media (max-width: 450px) {
-  .login-box-input {
-    width: 100%;
-  }
-}
-
-#otp-input-box:focus{
+ #otp-input-box:focus{
   box-shadow: #186cf2 0px 2px 8px 0px;
  }
 
-
+ 
  .signup-loading{
   width:100%;
   min-height: 100vh;
@@ -190,9 +138,4 @@
     opacity: 0;
   }
 }
-
-
-
-
-
 

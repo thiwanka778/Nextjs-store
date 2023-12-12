@@ -1,0 +1,79 @@
+.home-nav{
+    width:100%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color:#ebe8fc ;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    height:10vh;
+
+}
+.login-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 1rem;
+    /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: 0.1rem;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    border: none; /* Change the border color as desired */
+    border-radius: 5px;
+    color: #fff; /* Text color */
+    background-color: #3498db; /* Button background color */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
+  }
+  
+  /* Hover effect */
+  .login-btn:hover {
+ /* Darker color on hover */
+    border-color: #2980b9; /* Darker border color on hover */
+  }
+  .login-btn:active{
+    transform: scale(0.7);
+  }
+  
+  /* Focus effect */
+
+  .nav-title{
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color:#7e7e80;
+    position: relative;
+    transition: color 0.8s ease-in-out;
+    text-decoration: none;
+ 
+  }
+  .a.active{
+    color:red;
+  }
+  .nav-title:hover{
+    color:black;
+  }
+  .under-line{
+    width:80%;
+    height:3px;
+    background-color: black;
+    border-radius: 50%;
+    border: none;
+    position: absolute;
+    left:0rem;
+    margin-top: 1.4rem;
+    opacity: 0;
+    transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+  
+  }
+  .nav-title:hover .under-line{
+    opacity: 1;
+     
+  }
+  .next-link{
+    text-decoration: none;
+  }
+

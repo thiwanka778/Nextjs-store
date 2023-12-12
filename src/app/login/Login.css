@@ -1,0 +1,192 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&family=Ubuntu&display=swap');
+
+.login-page{
+  width:100;
+  min-height: 100vh;
+  background-color: #3a7bf2;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.login-box{
+  width:400px;
+  
+  padding: 2rem;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.login-box-input{
+ width:300px;
+}
+.input-box {
+width: 100%;
+padding: 1rem;
+box-sizing: border-box;
+border: 1px solid #ccc;
+border-radius: 8px;
+outline: none;
+transition: 0.3s;
+font-family: 'Poppins', sans-serif;
+font-weight: 500;
+font-size: 1.2rem;
+}
+
+.input-box:focus {
+box-shadow: #186cf2 0px 2px 8px 0px;
+
+}
+
+.login-button {
+font-family: 'Poppins', sans-serif;
+display: inline-block;
+padding: 10px 16px;
+font-size: 1rem;
+text-align: center;
+text-decoration: none;
+cursor: pointer;
+border: none;
+border-radius: 8px;
+width:100%;
+color: #fff;
+background-color: #007bff; /* Primary color, you can change this */
+transition: all 0.3s ease;
+}
+
+.login-button:hover {
+background-color: #0056b3; /* Darker shade on hover, adjust as needed */
+}
+
+.login-button:active {
+transform: scale(0.8); /* Slight scale down when button is pressed */
+}
+
+@media (max-width: 450px) {
+.login-box {
+  width: 100%;
+}
+
+}
+
+@media (max-width: 450px) {
+.login-box-input {
+  width: 100%;
+}
+}
+
+#otp-input-box:focus{
+box-shadow: #186cf2 0px 2px 8px 0px;
+}
+
+
+.signup-loading{
+width:100%;
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+}
+.triangles {
+transform: translate(-50%, -50%);
+height: 81px;
+width: 90px;
+position: absolute;
+left: 50%;
+top: 50%;
+}
+
+.tri {
+position: absolute;
+animation: pulse_51 750ms ease-in infinite;
+border-top: 27px solid #215A6D;
+border-left: 15px solid transparent;
+border-right: 15px solid transparent;
+border-bottom: 0px;
+}
+
+.tri.invert {
+border-top: 0px;
+border-bottom: 27px solid #215A6D;
+border-left: 15px solid transparent;
+border-right: 15px solid transparent;
+}
+
+.tri:nth-child(1) {
+left: 30px;
+}
+
+.tri:nth-child(2) {
+left: 15px;
+top: 27px;
+animation-delay: -125ms;
+}
+
+.tri:nth-child(3) {
+left: 30px;
+top: 27px;
+}
+
+.tri:nth-child(4) {
+left: 45px;
+top: 27px;
+animation-delay: -625ms;
+}
+
+.tri:nth-child(5) {
+top: 54px;
+animation-delay: -250ms;
+}
+
+.tri:nth-child(6) {
+top: 54px;
+left: 15px;
+animation-delay: -250ms;
+}
+
+.tri:nth-child(7) {
+top: 54px;
+left: 30px;
+animation-delay: -375ms;
+}
+
+.tri:nth-child(8) {
+top: 54px;
+left: 45px;
+animation-delay: -500ms;
+}
+
+.tri:nth-child(9) {
+top: 54px;
+left: 60px;
+animation-delay: -500ms;
+}
+
+@keyframes pulse_51 {
+0% {
+  opacity: 1;
+}
+
+16.666% {
+  opacity: 1;
+}
+
+100% {
+  opacity: 0;
+}
+}
+
+
+
+
+
+

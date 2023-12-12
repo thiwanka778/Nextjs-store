@@ -1,0 +1,9 @@
+font-family: 'Poppins', sans-serif;
+font-family: 'Roboto', sans-serif;
+font-family: 'Ubuntu', sans-serif;
+
+
+
+fontFamily: "'Poppins', sans-serif"
+fontFamily: "'Roboto', sans-serif"
+fontFamily: "'Ubuntu', sans-serif"
