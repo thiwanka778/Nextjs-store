@@ -31,9 +31,14 @@ interface initialStateType {
     resetPasswordErrorMessage:any|null|string,
 }
 
-const localUser= localStorage.getItem("user");
-const localToken=sessionStorage.getItem("token");
-const localRefreshToken=localStorage.getItem("refreshToken");
+// const localUser= localStorage.getItem("user");
+// const localToken=sessionStorage.getItem("token");
+// const localRefreshToken=localStorage.getItem("refreshToken");
+
+const localUser = typeof window !== 'undefined' ? localStorage.getItem("user") : null;
+const localToken = typeof window !== 'undefined' ? sessionStorage.getItem("token") : null;
+const localRefreshToken = typeof window !== 'undefined' ? localStorage.getItem("refreshToken") : null;
+
 
 
 const initialState:initialStateType = {
