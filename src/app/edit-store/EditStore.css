@@ -62,3 +62,48 @@
     font-size: 1rem;
     color:#9e9da1;
   }
+  .delete-btn-store {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 0.1rem;
+    text-decoration: none;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    border: none; /* Red border color */
+    border-radius: 8px;
+    color: white; /* Red text color */
+    background-color: #fc0303;
+    transition: all 0.3s;
+  }
+
+  .delete-btn-store:active{
+    transform: scale(0.7);
+  }
+
+  
+  .delete-btn-store:hover {
+    background-color: #a80309; /* Red background color on hover */
+    color: #fff; /* White text color on hover */
+  }
+
+  .delete-btn-cancel-store{
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 0.1rem;
+    text-decoration: none;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    border: none; /* Red border color */
+    border-radius: 8px;
+    color: white; /* Red text color */
+    background-color: #6f84fc;
+    transition: all 0.3s;
+  }
+
+  .delete-btn-cancel-store:active{
+    transform: scale(0.7);
+  }

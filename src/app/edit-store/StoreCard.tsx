@@ -10,7 +10,9 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-const StoreCard = ({name, description, city, address, contact, storeImageUrl, deleted,id,createdAt,updateClick}:any) => {
+const StoreCard = ({name, description, city, 
+  address, contact, storeImageUrl, deleted,id,createdAt,
+  updateClick,setDeleteOpen,deleteIconClick}:any) => {
 
   // const createdAt = "2023-12-06T22:48:20.150971";
 const formattedTime = moment(createdAt).fromNow();
@@ -115,7 +117,8 @@ const data:any={
               <span>
               <EditIcon sx={{color:"#04b020",marginRight:"0.5rem",cursor:"pointer",fontSize:25}} 
               onClick={()=>updateClick(data)}/>
-              <DeleteForeverIcon sx={{color:"#f20505",cursor:"pointer",fontSize:25}}/>
+              <DeleteForeverIcon sx={{color:"#f20505",cursor:"pointer",fontSize:25}}
+              onClick={()=>deleteIconClick(data)}  />
               </span>
             </div>
 

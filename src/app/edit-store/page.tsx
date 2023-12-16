@@ -5,7 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { redirect } from "next/navigation";
 import { nanoid } from "@reduxjs/toolkit";
 import Backdrop from "@mui/material/Backdrop";
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 import CircularProgress from "@mui/material/CircularProgress";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import StoreCard from "./StoreCard";
 import { getAllStores, resetStore, updateStore } from "@/redux/features/storeSlice";
 import {  Modal, Upload,message } from 'antd';
@@ -50,7 +52,9 @@ const EditStore = () => {
   const [uploadedImage, setUploadedImage] = useState<string | any | null>("");
   const [existingImage,setExistingImage]= useState<any|null|string>("");
   const [previewImage, setPreviewImage] = useState("");
+  const [deleteOpen,setDeleteOpen]=useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const [deleteData,setDeleteData]=React.useState<any|null|string>("");
   const [loading,setLoading]=useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -88,7 +92,7 @@ const EditStore = () => {
     setIsModalOpen(true);
   };
 
-console.log(storeInfo)
+// console.log(storeInfo)
   const handleOk = () => {
     setStoreError("");
     setUploadedImage("");
@@ -112,9 +116,16 @@ console.log(storeInfo)
 
   // console.log(getStoreData)
 
+  const deleteIconClick=(data:any)=>{
+    //  console.log(data,"DATA BALLA");
+    setDeleteData(data);
+     setDeleteOpen(true);
+  }
+
   const displayStores=getStoreData?.map((item:any)=>{
     return (
-      <StoreCard {...item} key={item?.id} updateClick={updateClick}/>
+      <StoreCard {...item} key={item?.id} updateClick={updateClick} 
+       setDeleteOpen={setDeleteOpen}  deleteIconClick={deleteIconClick}/>
     )
   });
 
@@ -232,7 +243,7 @@ console.log(storeInfo)
         await deleteObject(imageRef);
         console.log("Image deleted successfully");
         setLoading(false);
-        return; // If successful, exit the function
+        return "Image deleted successfully"; // If successful, exit the function
       } catch (error) {
         console.error(
           `Failed to delete image (attempt ${attempt + 1}):`,
@@ -318,7 +329,11 @@ console.log(storeInfo)
        
         dispatch(getAllStores());
         if(uploadedImage!=""){
-          deleteImage(existingImage);
+           const output:any|null|string=deleteImage(existingImage);
+           if(output==="Image deleted successfully"){
+               setUploadedImage("");
+               setExistingImage("");
+           }
 
         }
         setStoreError("");
@@ -361,7 +376,17 @@ console.log(storeInfo)
        }
     }
 
-  },[updateStoreLoading])
+  },[updateStoreLoading]);
+
+
+  const handleDeleteOk = () => {
+   setDeleteOpen(false);
+   setDeleteData("");
+  };
+  const handleDeleteCancel = () => {
+    setDeleteOpen(false);
+    setDeleteData("");
+  };
 
   return (
     <>
@@ -513,6 +538,35 @@ console.log(storeInfo)
       >
         <CircularProgress color="inherit" size={50} />
       </Backdrop>
+
+
+      <Modal 
+   
+      title={
+        <div style={{display:"flex",alignItems:"center",background:"transparent"}}>
+          <WarningRoundedIcon sx={{color:"#f2a407",marginRight:"0.5rem",fontSize:"30px"}}/>
+            <span style={{textAlign:"center",
+      fontFamily: "'Roboto', sans-serif",fontSize:"1.2rem",color:"black"}}>Delete Store</span>
+        </div>
+    
+    }
+       open={deleteOpen}
+       onOk={handleDeleteOk} 
+       footer={null}
+       zIndex={50000}
+       onCancel={handleDeleteCancel}>
+     <div style={{width:"100%",display:"flex",flexDirection:"column"}}>
+           <p style={{fontFamily: "'Roboto', sans-serif",
+           fontSize:"1rem",color:"#67686e",fontWeight:"500"}}>Are you sure you want to delete 
+           <span style={{color:"black",fontWeight:"bold",}}> {deleteData?.name} ? </span></p>
+
+           <div style={{display:"flex",width:"100%",alignItems:"center",justifyContent:"flex-end",marginTop:"0.5rem"}}>
+                  <button className="delete-btn-cancel-store" onClick={handleDeleteCancel}
+                   style={{marginRight:"0.5rem"}}>Cancel</button>
+                  <button className="delete-btn-store">Delete</button>
+           </div>
+     </div>
+      </Modal>
 
 
 
