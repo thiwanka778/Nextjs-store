@@ -339,7 +339,8 @@ const EditStore = () => {
         setStoreError("");
         setFileList([]);
         setIsModalOpen(false);
-
+        dispatch(resetStore());
+        setError("")
 
 
        }else if(updateStoreStatus===false && updateStoreErrorMesssage=="Store not found !"){
