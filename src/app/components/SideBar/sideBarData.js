@@ -11,6 +11,7 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import CategoryIcon from '@mui/icons-material/Category';
 
 export default [
     {
@@ -38,6 +39,12 @@ export default [
             path:"/edit-store"
         },
     ]
+},
+
+{
+    title:"Category",
+    icon: <CategoryIcon/>,
+    path:"/category"
 },
 
 

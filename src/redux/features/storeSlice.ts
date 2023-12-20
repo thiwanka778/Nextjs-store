@@ -13,6 +13,10 @@ interface initialStateType {
     updateStoreLoading:boolean,
     updateStoreStatus:boolean,
    updateStoreErrorMesssage:any|null|string,
+
+   deleteStoreLoading:boolean,
+   deleteStoreStatus:boolean,
+   deleteStoreErrorMessage:any|null|string,
  
     
 }
@@ -32,7 +36,13 @@ const initialState:initialStateType = {
 
    getStoreLoading:false,
    getStoreData:[],
+
+   deleteStoreLoading:false,
+   deleteStoreStatus:false,
+   deleteStoreErrorMessage:"",
 }
+
+
 
 export const createStore:any = createAsyncThunk(
   'user/createStore', 
@@ -75,6 +85,35 @@ export const updateStore:any = createAsyncThunk(
 
     try {
       const response = await axios.put(`${BASE_URL}/store/update-store/${payload?.id}`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
+
+      return response.data;
+    } catch (error:any) {
+      let message = '';
+
+      if (error?.response?.status === 500) {
+        message = 'Internal Server Error';
+      } else {
+        message = (error.response && error.response.data && error.response.data.message) ||
+                  error.message || error.toString();
+      }
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const deleteStore:any = createAsyncThunk(
+  'user/temp-deleteStore', 
+  async (id, thunkAPI) => {
+  
+
+    try {
+      const response = await axios.put(`${BASE_URL}/store/temp-delete/${id}`,null, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${sessionStorage.getItem("token")}`,
@@ -145,6 +184,8 @@ export const storeSlice:any=createSlice({
                 state.createStoreErrorMessage="";
                 state.updateStoreStatus=false;
                 state.updateStoreErrorMesssage="";
+                state.deleteStoreErrorMessage="";
+                state.deleteStoreStatus=false;
              }
           },
 
@@ -199,6 +240,25 @@ export const storeSlice:any=createSlice({
     state.updateStoreErrorMesssage=action?.payload;
     
    })
+
+   //deleteStore
+
+   .addCase(deleteStore.pending, (state:any) => {
+    state.deleteStoreLoading=true;
+    state.deleteStoreErrorMessage="";
+    state.deleteStoreStatus=false;
+  })
+  .addCase(deleteStore.fulfilled, (state:any, action:any) => {
+    state.deleteStoreLoading=false;
+    state.deleteStoreErrorMessage="";
+    state.deleteStoreStatus=true;
+  })
+  .addCase(deleteStore.rejected, (state:any, action:any) => {
+    state.deleteStoreLoading=false;
+    state.deleteStoreErrorMessage=action.payload;
+    state.deleteStoreStatus=false;
+   
+  })
      
 
 

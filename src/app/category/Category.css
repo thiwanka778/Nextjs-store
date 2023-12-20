@@ -1,0 +1,54 @@
+.category{
+    width:100%;
+    padding:1rem;
+  }
+
+  .main-category{
+    width:400px;
+    padding:0.2rem;
+  }
+
+  .category-main-box{
+    display: flex;
+  }
+
+  .category-main-box-a{
+    flex:1;
+    flex-direction: column;
+    padding:0.5rem;
+  }
+
+  .category-main-box-b{
+    flex:1;
+    flex-direction: column;
+    padding:0.5rem;
+  }
+
+  .create-category-btn {
+    width:100%;
+    padding: 10px 20px;
+    letter-spacing: 0.1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    background-color: #14ba02; 
+    font-family: 'Ubuntu', sans-serif;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+  
+  .create-category-btn:hover {
+    background-color: #108a03; /* Change this color to a darker shade or your preferred hover color */
+  }
+
+  .create-category-btn:active {
+    transform: scale(0.7);
+  }
+
+  .ant-select-selection-search-input{
+    font-size: 1.2rem !important;
+    font-family: 'Poppins', sans-serif !important;
+  }
+  
