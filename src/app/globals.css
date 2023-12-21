@@ -1,6 +1,29 @@
 
   @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&family=Ubuntu&display=swap');
 
+  ::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+    height: 10px; /* Height of the scrollbar */
+  }
+  
+  /* Track (background) of the scrollbar */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Track color */
+  }
+  
+  /* Handle (thumb) of the scrollbar */
+  ::-webkit-scrollbar-thumb {
+    background: #b8bad1; /* Thumb color */
+    border-radius: 10px; /* Rounded corners */
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #9a9cad; /* Thumb color on hover */
+  }
+  
+ 
+
   *{
     margin:0;
     padding: 0;

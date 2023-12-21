@@ -96,6 +96,45 @@ export const createCategory:any = createAsyncThunk(
   });
 
 
+  export const createSubCategory:any = createAsyncThunk(
+    'user/createSubCategory', 
+    async ({id,name,description}:any, thunkAPI) => {
+
+    try {
+      const reqBody=[{
+        name,description
+      }]
+      console.log(sessionStorage.getItem("token"))
+      const response = await axios.post(`${BASE_URL}/create-sub-category/${id}`, reqBody,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer `+sessionStorage.getItem("token"),
+      
+        },
+      });
+  
+      return response.data;
+    } catch (error:any) {
+    
+     
+      let message:any='';
+  
+      if(error?.response?.status==500){
+          message='Internal Server Error'
+      }else{
+        message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      }
+       
+  
+      return thunkAPI.rejectWithValue(message);
+    }
+  });
+
+
 
 
 export const categorySlice:any=createSlice({
@@ -106,7 +145,7 @@ export const categorySlice:any=createSlice({
                 state.categoryLoading=false;
                 state.categoryStatus=false;
                 state.mainCategoryErrorMessage="";
-                
+                state.subCategoryErrorMessage="";
              }
           },
 
@@ -146,6 +185,28 @@ export const categorySlice:any=createSlice({
           
         
        })
+
+       //createSubCategory
+
+       .addCase(createSubCategory.pending, (state:any) => {
+        state.categoryLoading=true;
+        state.categoryStatus=false;
+        state.subCategoryErrorMessage="";
+        
+        
+     })
+     .addCase(createSubCategory.fulfilled, (state:any, action:any) => {
+         state.categoryLoading=false;
+         state.categoryStatus=true;
+         state.subCategoryErrorMessage="";
+         
+     })
+     .addCase(createSubCategory.rejected, (state:any, action:any) => {
+         state.categoryLoading=false;
+         state.categoryStatus=false;
+         state.subCategoryErrorMessage=action.payload;
+      
+     })
 
 
     

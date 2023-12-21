@@ -3,12 +3,13 @@ import React ,{useState} from 'react';
 import "./Category.css";
 import { redirect } from "next/navigation";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { AutoComplete } from 'antd';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import IconButton from '@mui/material/IconButton';
 import UpdateIcon from '@mui/icons-material/Update';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCategory, getAllCategory, resetCategory } from '@/redux/features/categorySlice';
+import { createCategory, getAllCategory, resetCategory,createSubCategory } from '@/redux/features/categorySlice';
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -16,8 +17,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 interface MainCategory {
   mainCategoryId: number|string;
   mainCategoryName: string;
-  mainCategoryDescription: string;
+  mainCategoryDescription: string|any|null;
   subCategoryList: any[];
+}
+interface SubCategory{
+  id:number|string;
+  name:string;
+  description:string|any|null;
 }
 
 const Category = () => {
@@ -32,7 +38,11 @@ const Category = () => {
   } =useSelector((state:any)=>state.category);
   const {user}=useSelector((state:any)=>state.user);
   const [mainCategory, setMainCategory] = useState('');
+  const [subCategoryList,setSubCategoryList]=useState<SubCategory[]>([]);
+  const [subCategory, setSubCategory] = useState('');
+  const [selectedMainCategory, setSelectedMainCategory] = useState<any|null|string>(null);
   const [categoryError,setCategoryError]=useState("");
+  const [subCategoryError,setSubCategoryError]=useState("");
   const [mainCategoryList,setMainCategoryList]=useState<MainCategory[]>([]);
 
   React.useLayoutEffect(() => {
@@ -75,6 +85,22 @@ const createMainCategoryClick=()=>{
   }
   
 };
+
+const createSubCategoryClick=()=>{
+  setSubCategoryError("")
+   if(selectedMainCategory){
+      if(subCategory && subCategory?.trim()!=""){
+        
+            
+             const id:any=selectedMainCategory;
+              const name:any=subCategory;
+              const description:any="";
+              
+          dispatch(createSubCategory({id,name,description}))
+        
+      }
+   }
+}
 
 
 
@@ -125,8 +151,84 @@ const mainCategoryDisplay=mainCategoryList?.map((item:any,index:number)=>{
   )
 })
 
-console.log(categoryError,mainCategoryList);
+console.log(categoryError,selectedMainCategory);
 
+
+const handleCategoryChange = (event:any, newValue:any) => {
+  setSelectedMainCategory(newValue?.mainCategoryId);
+  // You can perform additional actions here with the selected category
+  // For example, console.log(newValue) to see the selected category object
+};
+
+const handleSubCategoryChange = (event:any) => {
+  setSubCategory(event.target.value);
+  // You can perform additional actions here with the entered sub-category
+  // For example, console.log(event.target.value) to see the entered value
+};
+
+React.useEffect(()=>{
+   if(categoryLoading===false){
+     if(categoryStatus===true){
+      dispatch(resetCategory());
+      setSubCategoryError("");
+      dispatch(getAllCategory());
+
+     }else if(categoryStatus===false && subCategoryErrorMessage==="Sub category already exist in main or sub !"){
+      dispatch(resetCategory())
+      setSubCategoryError("*Sub category already exist in main or sub category !")
+     }else if(categoryStatus===false && subCategoryErrorMessage==="Unauthorized"){
+      dispatch(resetCategory())
+      setSubCategoryError("*Your session is expired. please login again")
+     }else if(categoryStatus===false && subCategoryErrorMessage==="Internal Server Error"){
+      dispatch(resetCategory())
+      setSubCategoryError("*Something went wrong. try again")
+     }
+   }
+},[categoryLoading])
+
+
+     React.useEffect(()=>{
+      if(selectedMainCategory){
+         const findSub=mainCategoryList?.find((item:any)=>item?.mainCategoryId==selectedMainCategory);
+         console.log(findSub)
+         if(findSub){
+          setSubCategoryList(findSub?.subCategoryList)
+         }else{
+          setSubCategoryList([])
+         }
+
+      }else{
+        // null
+        setSubCategoryList([])
+      }
+
+     },[selectedMainCategory,categoryList]);
+
+     console.log(subCategoryList)
+
+     const subCategoryDisplay=subCategoryList?.map((item:any,index:number)=>{
+      return (
+        <div key={item?.id}
+         style={{display:"flex",alignItems:"center",background:"#07ed6f",height:"3rem",marginBottom:'0.5rem',
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
+        width:"100%",padding:"0.5rem",borderRadius:"10px",}}>
+          <input 
+      
+          type="text" value={item?.name} 
+           style={{outline:"none",border:"none",background:"transparent",width:"100%",
+           fontSize:"1.2rem",color:"white",
+           fontFamily: "'Ubuntu', sans-serif"}} />
+    
+    <Tooltip title="Update" placement='top'>
+      <IconButton>
+        <UpdateIcon sx={{color:"white"}} />
+      </IconButton>
+    </Tooltip>
+    
+    
+        </div>
+      )
+    }) 
 
   return (
     <>
@@ -137,21 +239,18 @@ console.log(categoryError,mainCategoryList);
 
       <section className='category-main-box-a'>
 
-      {categoryError && <p style={{fontWeight:"bold",marginBottom:"0.5rem",
+      {categoryError && <p style={{fontWeight:"bold",marginBottom:"1rem",
        fontFamily: "'Roboto', sans-serif",
        color:"#f70217"}}>
         {categoryError}</p>}
 
-      <p style={{marginBottom:"0.5rem",fontFamily: "'Roboto', sans-serif",fontSize:'1.2rem'
-        ,fontWeight:"bold",}}>Enter Main Category</p>
-        <input
-       className="input-box"
-       placeholder="Main Category"
-       type="text"
-       style={{ marginBottom: "0.5rem" }}
-       value={mainCategory}
-       onChange={handleMainCategoryChange}
-          />
+        <TextField 
+        sx={{width:"100%",marginBottom:"0.5rem"}}
+         value={mainCategory}
+         onChange={handleMainCategoryChange}
+         label="Enter Main Category"
+          variant="outlined" />
+      
 
           <button className='create-category-btn' 
           style={{cursor:mainCategory?.trim()===""?"not-allowed":'pointer',marginBottom:"1rem",
@@ -165,22 +264,41 @@ console.log(categoryError,mainCategoryList);
 
       <section className='category-main-box-b'>
 
+      {subCategoryError && <p style={{fontWeight:"bold",marginBottom:"1rem",
+       fontFamily: "'Roboto', sans-serif",
+       color:"#f70217"}}>
+        {subCategoryError}</p>}
 
-      <p style={{marginBottom:"0.5rem",fontFamily: "'Roboto', sans-serif",fontSize:'1.2rem'
-        ,fontWeight:"bold",}}>Select Main Category</p>
+
+      <p style={{marginBottom:"1rem",fontFamily: "'Roboto', sans-serif",fontSize:'1rem',color:"#fc9c0a"
+        ,fontWeight:"bold",}}>*First Select Main Category</p>
+
+<Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      onChange={handleCategoryChange}
+      options={mainCategoryList}
+      getOptionLabel={(option:any) => option?.mainCategoryName}
+      sx={{ width: "100%",marginBottom:"1rem" }}
+      renderInput={(params) => <TextField {...params} label="Select Main Category" />}
+    />
 
       
+        <TextField 
+        value={subCategory}
+        onChange={handleSubCategoryChange}
+        sx={{width:"100%",marginBottom:"0.5rem"}}
+         label="Enter Sub Category"
+          variant="outlined" />
 
-      <p style={{marginBottom:"0.5rem",fontFamily: "'Roboto', sans-serif",fontSize:'1.2rem'
-        ,fontWeight:"bold",}}>Enter Sub Category</p>
-        <input
-        className="input-box"
-         placeholder="Main Category"
-         type="text"
-         style={{ marginBottom: "0.5rem" }}
-          />
+          <button className='create-category-btn'
+          style={{cursor:(selectedMainCategory && subCategory?.trim()!="")?"pointer":"not-allowed",
+          marginBottom:"1rem",
+        background:(selectedMainCategory && subCategory?.trim()!="")?"#14ba02":"#a3a4a8"}}
+           disabled={(selectedMainCategory && subCategory?.trim()!="")?false:true}
+          onClick={createSubCategoryClick}>CREATE</button>
 
-          <button className='create-category-btn'>CREATE</button>
+          {subCategoryDisplay}
 
       </section>
 
