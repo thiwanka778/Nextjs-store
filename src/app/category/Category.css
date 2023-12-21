@@ -12,6 +12,16 @@
     display: flex;
   }
 
+  @media (max-width: 679px) {
+    /* Your CSS styles for screens less than 680 pixels wide */
+    /* For example: */
+    .category-main-box{
+      display: flex;
+      flex-direction: column;
+    }
+    /* Add your other styles here */
+  }
+
   .category-main-box-a{
     flex:1;
     flex-direction: column;
