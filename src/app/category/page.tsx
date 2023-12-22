@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import UpdateIcon from '@mui/icons-material/Update';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCategory, getAllCategory, resetCategory,createSubCategory } from '@/redux/features/categorySlice';
+import { createCategory, getAllCategory, resetCategory,createSubCategory, updateMainCategory, updateSubCategory } from '@/redux/features/categorySlice';
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -35,6 +35,8 @@ const Category = () => {
     mainCategoryErrorMessage,
     subCategoryErrorMessage,
     categoryList,
+    updateMainCategoryErrorMessage,
+      updateSubCategoryErrorMessage,
   } =useSelector((state:any)=>state.category);
   const {user}=useSelector((state:any)=>state.user);
   const [mainCategory, setMainCategory] = useState('');
@@ -93,7 +95,7 @@ const createSubCategoryClick=()=>{
         
             
              const id:any=selectedMainCategory;
-              const name:any=subCategory;
+              const name:any=subCategory?.trim();
               const description:any="";
               
           dispatch(createSubCategory({id,name,description}))
@@ -127,6 +129,42 @@ React.useEffect(()=>{
 
 },[categoryLoading]);
 
+const updateMainCategoryClick=(item:any)=>{
+  setCategoryError("");
+    // console.log(item);
+    if(item?.mainCategoryName?.trim()!=""){
+      const id=item?.mainCategoryId;
+      const name=item?.mainCategoryName?.trim();
+      const description="";
+       dispatch(updateMainCategory({id,name,description}))
+    }
+}
+
+
+
+React.useEffect(()=>{
+  if(categoryLoading===false){
+     if(categoryStatus===true){
+      dispatch(resetCategory());
+      setCategoryError("");
+      dispatch(getAllCategory());
+      // success
+     }else if(categoryStatus===false && updateMainCategoryErrorMessage==="The provided main category name matches an existing subcategory name. Please use a different name for the main category."){
+      dispatch(resetCategory());
+      setCategoryError("*The provided main category name matches an existing subcategory name. Please use a different name for the main category.")
+     }else if(categoryStatus===false && updateMainCategoryErrorMessage==="Duplicate category found! Cannot update."){
+      dispatch(resetCategory());
+      setCategoryError("*Main category already exist !")
+     }else if(categoryStatus===false && updateMainCategoryErrorMessage==="Unauthorized"){
+      dispatch(resetCategory());
+      setCategoryError("*Your session is expired. please login again")
+     }else if(categoryStatus===false && updateMainCategoryErrorMessage==="Internal Server Error"){
+      dispatch(resetCategory());
+      setCategoryError("*Something went wrong. Please try again !")
+     }
+  }
+},[categoryLoading])
+
 const mainCategoryDisplay=mainCategoryList?.map((item:any,index:number)=>{
   return (
     <div key={item?.mainCategoryId}
@@ -140,7 +178,7 @@ const mainCategoryDisplay=mainCategoryList?.map((item:any,index:number)=>{
        fontSize:"1.2rem",color:"white",
        fontFamily: "'Ubuntu', sans-serif"}} />
 
-<Tooltip title="Update" placement='top'>
+<Tooltip title="Update" placement='left' onClick={()=>updateMainCategoryClick(item)}>
   <IconButton>
     <UpdateIcon sx={{color:"white"}} />
   </IconButton>
@@ -151,7 +189,7 @@ const mainCategoryDisplay=mainCategoryList?.map((item:any,index:number)=>{
   )
 })
 
-console.log(categoryError,selectedMainCategory);
+// console.log(categoryError,selectedMainCategory);
 
 
 const handleCategoryChange = (event:any, newValue:any) => {
@@ -190,7 +228,7 @@ React.useEffect(()=>{
      React.useEffect(()=>{
       if(selectedMainCategory){
          const findSub=mainCategoryList?.find((item:any)=>item?.mainCategoryId==selectedMainCategory);
-         console.log(findSub)
+        //  console.log(findSub)
          if(findSub){
           setSubCategoryList(findSub?.subCategoryList)
          }else{
@@ -206,20 +244,64 @@ React.useEffect(()=>{
 
      console.log(subCategoryList)
 
+     const updateSubCategoryClick=(item:any)=>{
+      setSubCategoryError("");
+      const id=item?.id;
+      const name=item?.name?.trim();
+      const description="";
+        if(name?.trim()!==""){
+             dispatch(updateSubCategory({id,name,description}))
+        }
+     }
+
+     React.useEffect(()=>{
+      if(categoryLoading===false){
+         if(categoryStatus===true){
+          dispatch(resetCategory());
+          setSubCategoryError("");
+          dispatch(getAllCategory());
+          // success
+         }else if(categoryStatus===false && updateSubCategoryErrorMessage==="The provided sub category name matches an existing main category name. Please use a different name for the sub category."){
+          dispatch(resetCategory());
+           setSubCategoryError("*The provided sub category name matches an existing main category name. Please use a different name for the sub category.")
+         }else if(categoryStatus===false && updateSubCategoryErrorMessage==="Duplicate sub category !"){
+          dispatch(resetCategory());
+          setSubCategoryError("*Sub category already exist !")
+         }else if(categoryStatus===false && updateSubCategoryErrorMessage==="Unauthorized"){
+          dispatch(resetCategory());
+          setSubCategoryError("*Your session is expired. please login again")
+         }else if(categoryStatus===false && updateSubCategoryErrorMessage==="Internal Server Error"){
+          dispatch(resetCategory());
+          setSubCategoryError("*Something went wrong. Please try again !")
+         }
+      }
+    },[categoryLoading])
+
+     const handleInputChangeSubCategoryList = (index:number, event:any) => {
+      const updatedSubCategoryList = subCategoryList.map((item, i) => {
+        if (i === index) {
+          return { ...item, name: event.target.value }; // Update the name of the specific item
+        }
+        return item;
+      });
+    
+      setSubCategoryList(updatedSubCategoryList); // Update the state with the modified array
+    };
+
      const subCategoryDisplay=subCategoryList?.map((item:any,index:number)=>{
       return (
         <div key={item?.id}
-         style={{display:"flex",alignItems:"center",background:"#07ed6f",height:"3rem",marginBottom:'0.5rem',
+         style={{display:"flex",alignItems:"center",background:"#a70ec9",height:"3rem",marginBottom:'0.5rem',
         boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
         width:"100%",padding:"0.5rem",borderRadius:"10px",}}>
           <input 
-      
+         onChange={(event) => handleInputChangeSubCategoryList(index, event)}
           type="text" value={item?.name} 
            style={{outline:"none",border:"none",background:"transparent",width:"100%",
            fontSize:"1.2rem",color:"white",
            fontFamily: "'Ubuntu', sans-serif"}} />
     
-    <Tooltip title="Update" placement='top'>
+    <Tooltip title="Update" placement='left' onClick={()=>updateSubCategoryClick(item)}>
       <IconButton>
         <UpdateIcon sx={{color:"white"}} />
       </IconButton>
@@ -229,6 +311,8 @@ React.useEffect(()=>{
         </div>
       )
     }) 
+
+    // console.log(mainCategoryList)
 
   return (
     <>
@@ -258,6 +342,12 @@ React.useEffect(()=>{
           disabled={mainCategory?.trim()===""?true:false}
           onClick={createMainCategoryClick}>CREATE</button>
 
+         {mainCategoryList?.length>=1 &&  <div style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"1rem"}}>
+            <p style={{textAlign:"center",color:"#0e63eb",fontSize:"1.2rem",
+            fontFamily: "'Roboto', sans-serif",
+            fontWeight:"bold"}}>Main categories you have added</p>
+          </div>}
+
           {mainCategoryDisplay}
 
       </section>
@@ -273,7 +363,7 @@ React.useEffect(()=>{
       <p style={{marginBottom:"1rem",fontFamily: "'Roboto', sans-serif",fontSize:'1rem',color:"#fc9c0a"
         ,fontWeight:"bold",}}>*First Select Main Category</p>
 
-<Autocomplete
+     <Autocomplete
       disablePortal
       id="combo-box-demo"
       onChange={handleCategoryChange}
@@ -281,7 +371,7 @@ React.useEffect(()=>{
       getOptionLabel={(option:any) => option?.mainCategoryName}
       sx={{ width: "100%",marginBottom:"1rem" }}
       renderInput={(params) => <TextField {...params} label="Select Main Category" />}
-    />
+       />
 
       
         <TextField 
@@ -297,6 +387,12 @@ React.useEffect(()=>{
         background:(selectedMainCategory && subCategory?.trim()!="")?"#14ba02":"#a3a4a8"}}
            disabled={(selectedMainCategory && subCategory?.trim()!="")?false:true}
           onClick={createSubCategoryClick}>CREATE</button>
+
+{selectedMainCategory && <div style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"1rem"}}>
+            <p style={{textAlign:"center",color:"#a40ec9",fontSize:"1.2rem",
+            fontFamily: "'Roboto', sans-serif",
+            fontWeight:"bold"}}>Sub categories of {(mainCategoryList?.find((item:MainCategory)=>item?.mainCategoryId==selectedMainCategory))?.mainCategoryName}</p>
+          </div>}
 
           {subCategoryDisplay}
 

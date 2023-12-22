@@ -11,6 +11,8 @@ interface initialStateType {
       subCategoryErrorMessage:any|string|null,
 
       categoryList:any[]|null|any,
+      updateMainCategoryErrorMessage:any|null|string,
+      updateSubCategoryErrorMessage:any|null|string,
     
 }
 
@@ -22,6 +24,9 @@ const initialState:initialStateType = {
       categoryStatus:false,
       mainCategoryErrorMessage:"",
       subCategoryErrorMessage:"",
+
+      updateMainCategoryErrorMessage:"",
+      updateSubCategoryErrorMessage:"",
 
       categoryList:[],
 }
@@ -134,6 +139,84 @@ export const createCategory:any = createAsyncThunk(
     }
   });
 
+  export const updateMainCategory:any = createAsyncThunk(
+    'user/updateMainCategory', 
+    async ({id,name,description}:any, thunkAPI) => {
+
+    try {
+      const reqBody={
+        name,
+        description
+      }
+    
+      const response = await axios.put(`${BASE_URL}/update-main-category/${id}`, reqBody,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer `+sessionStorage.getItem("token"),
+      
+        },
+      });
+  
+      return response.data;
+    } catch (error:any) {
+    
+     
+      let message:any='';
+  
+      if(error?.response?.status==500){
+          message='Internal Server Error'
+      }else{
+        message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      }
+       
+  
+      return thunkAPI.rejectWithValue(message);
+    }
+  });
+
+  export const updateSubCategory:any = createAsyncThunk(
+    'user/updateSubCategory', 
+    async ({id,name,description}:any, thunkAPI) => {
+
+    try {
+      const reqBody={
+        name,
+        description
+      }
+    
+      const response = await axios.put(`${BASE_URL}/update-sub-category/${id}`, reqBody,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer `+sessionStorage.getItem("token"),
+      
+        },
+      });
+  
+      return response.data;
+    } catch (error:any) {
+    
+     
+      let message:any='';
+  
+      if(error?.response?.status==500){
+          message='Internal Server Error'
+      }else{
+        message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      }
+       
+  
+      return thunkAPI.rejectWithValue(message);
+    }
+  });
+
 
 
 
@@ -146,6 +229,8 @@ export const categorySlice:any=createSlice({
                 state.categoryStatus=false;
                 state.mainCategoryErrorMessage="";
                 state.subCategoryErrorMessage="";
+                state.updateMainCategoryErrorMessage="";
+                state.updateSubCategoryErrorMessage="";
              }
           },
 
@@ -208,7 +293,51 @@ export const categorySlice:any=createSlice({
       
      })
 
+     //const updateMainCategory
 
+     .addCase(updateMainCategory.pending, (state:any) => {
+      state.categoryLoading=true;
+      state.categoryStatus=false;
+      state.updateMainCategoryErrorMessage="";
+      
+      
+      
+   })
+   .addCase(updateMainCategory.fulfilled, (state:any, action:any) => {
+       state.categoryLoading=false;
+       state.categoryStatus=true;
+ 
+       state.updateMainCategoryErrorMessage="";
+       
+   })
+   .addCase(updateMainCategory.rejected, (state:any, action:any) => {
+       state.categoryLoading=false;
+       state.categoryStatus=false;
+       state.updateMainCategoryErrorMessage=action.payload;
+    
+   })
+// updateSubCategory
+.addCase(updateSubCategory.pending, (state:any) => {
+  state.categoryLoading=true;
+  state.categoryStatus=false;
+  state.updateSubCategoryErrorMessage="";
+  
+  
+  
+})
+.addCase(updateSubCategory.fulfilled, (state:any, action:any) => {
+   state.categoryLoading=false;
+   state.categoryStatus=true;
+
+   state.updateSubCategoryErrorMessage="";
+   
+})
+.addCase(updateSubCategory.rejected, (state:any, action:any) => {
+   state.categoryLoading=false;
+   state.categoryStatus=false;
+   state.updateSubCategoryErrorMessage=action.payload;
+
+})
     
 
 
