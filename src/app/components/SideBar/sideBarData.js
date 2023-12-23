@@ -4,6 +4,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AlignVerticalBottomIcon from '@mui/icons-material/AlignVerticalBottom';
 import AirplaneTicketIcon from '@mui/icons-material/AirplaneTicket';
 import AppShortcutIcon from '@mui/icons-material/AppShortcut';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import ArticleIcon from '@mui/icons-material/Article';
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -46,6 +47,11 @@ export default [
     icon: <CategoryIcon/>,
     path:"/category"
 },
+{
+    title: "Product",
+    icon: <InventoryIcon/>,
+    path: "/product",
+}
 
 
 
