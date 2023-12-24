@@ -5,8 +5,10 @@ import { nanoid } from "@reduxjs/toolkit";
 import TextField from '@mui/material/TextField';
 import { useDispatch,useSelector } from 'react-redux';
 import Autocomplete from '@mui/material/Autocomplete';
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import { redirect } from "next/navigation";
-import { Modal, Upload, message } from "antd";
+import { Modal, Upload, message,Switch } from "antd";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
 import { getAllCategory } from '@/redux/features/categorySlice';
@@ -20,6 +22,8 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { storage } from "../firebaseConfig";
+import SnackBar from '../components/SnackBar/SnackBar';
+import { createProduct, resetProduct } from '@/redux/features/productSlice';
 
 
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -75,6 +79,11 @@ const Product = () => {
     const [loading, setLoading] = useState(false);
     const {categoryList}=useSelector((state:any)=>state.category);
     const {getStoreData}=useSelector((state:any)=>state.store);
+    const {    productLoading,
+      createProductStatus,
+      createProductErrorMessage,}=useSelector((state:any)=>state.product);
+    const [productSuccess, setProductSuccess]=useState(false);
+    const [imageArray,setImageArray]=useState<any[]>([]);
     const [fileList, setFileList] = useState<UploadFile[] | any[]>([]);
     const [previewImage, setPreviewImage] = useState("");
     const [selectedSubCategory, setSelectedSubCategory] = useState<any|null>(null); 
@@ -84,6 +93,7 @@ const Product = () => {
     const [subList,setSubList]=React.useState<SubCategory[]>([]);
     const [selectedMainCategory, setSelectedMainCategory] = useState<null|any>(null);
     const [storeList,setStoreList]=useState<Store[]>([]);
+    const [switchValue, setSwitchValue] = useState(false); 
     const [selectedStore, setSelectedStore] = React.useState<any|null>(null);
     const [productData, setProductData] = useState<any|null>({
       name: '',
@@ -351,7 +361,10 @@ const Product = () => {
                           </p>
 
                         <div style={{marginBottom:"1rem",display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-                             <button className='add-button' onClick={addVariantClick}>ADD</button>
+                             <button className='add-button' 
+                             disabled={!switchValue}
+                             style={{background:switchValue?"#06d42f":"#d2d4d9",cursor:switchValue?"pointer":'not-allowed'}}
+                             onClick={addVariantClick}>ADD</button>
                              {productVariantList?.length>1  && <button 
                              onClick={() => removeVariantClick(index)} className='delete-button'>REMOVE</button>}
                         </div>
@@ -442,6 +455,7 @@ const Product = () => {
 
 
   const saveProductClick=async()=>{
+
     if(productData?.name?.trim()=="" || productData?.description?.trim()=="" || 
      productData?.price?.trim()=="" || productData?.totalQuantity?.trim()=="" ||
      productData?.priceErrorMessage!="" || productData?.quantityErrorMessage!=""){
@@ -463,17 +477,20 @@ const Product = () => {
       return;
     }
 
-    for(let i=0;i<productVariantList?.length;i++){
-       if(productVariantList[i]?.optionTitle?.trim()=="" ||
-       productVariantList[i]?.optionName?.trim()=="" || 
-       productVariantList[i]?.price?.trim()=="" || 
-       productVariantList[i]?.quantity?.trim()==""  || 
-       productVariantList[i]?.priceErrorMessage?.trim()!="" || 
-       productVariantList[i]?.quantityErrorMessage?.trim()!=""){
-             return;  
-       }
-    };
 
+  if(switchValue==true){
+    for(let i=0;i<productVariantList?.length;i++){
+      if(productVariantList[i]?.optionTitle?.trim()=="" ||
+      productVariantList[i]?.optionName?.trim()=="" || 
+      productVariantList[i]?.price?.trim()=="" || 
+      productVariantList[i]?.quantity?.trim()==""  || 
+      productVariantList[i]?.priceErrorMessage?.trim()!="" || 
+      productVariantList[i]?.quantityErrorMessage?.trim()!=""){
+            return;  
+      }
+   };
+  }
+    
     const preparedVariants= productVariantList?.map((item:ProductVariantType)=>{
        return {
         "optionTitle": item?.optionTitle?.trim(),
@@ -483,23 +500,21 @@ const Product = () => {
        }
     });
 
- 
-
-    const uploadedURLs:any[] = [];
-
+    let uploadedURLs:any[] = [];
 
     fileList.forEach(async (file) => {
       const downloadURL = await uploadImageToFirebase(file.originFileObj);
       if (downloadURL) {
         uploadedURLs.push(downloadURL);
         if(uploadedURLs?.length===fileList?.length){
+          setImageArray(uploadedURLs);
           if(uploadedURLs && Array.isArray(uploadedURLs) && uploadedURLs?.length>=1){
             const preparedImagesArray:any[]=uploadedURLs?.map((item:any|string)=>{
                  return {
                   "productImageUrl":item,   
                  }
               });
-    
+              
               const payload={
                 "name": productData?.name?.trim(),
                 "description": productData.description?.trim(),
@@ -509,22 +524,47 @@ const Product = () => {
                 "subCategoryId": selectedSubCategory?.id,
                 "storeId": selectedStore?.id,
                 "productImages": preparedImagesArray,
-                "productVariants": preparedVariants,
+                "productVariants": switchValue===false?[]:preparedVariants,
               };
           
-              console.log("payload : ",payload);
+              // console.log("payload : ",payload);
+              dispatch(createProduct(payload));
               
         }
         }
        
       } 
-    });
-
-    
-
-    
+    }); 
     
   }
+
+React.useEffect(()=>{
+   if(productLoading===false){
+           if(createProductStatus===true){
+            // product created successfully
+            dispatch(resetProduct());
+              setProductSuccess(true);
+           }else if (createProductStatus===false && createProductErrorMessage==="Unauthorized"){
+            dispatch(resetProduct());
+            setProductSuccess(false);
+            imageArray.forEach(async(item:string|any|null)=>{
+              await deleteImage(item);
+          })
+           }else if(createProductStatus===false && createProductErrorMessage==="Internal Server Error"){
+            dispatch(resetProduct());
+            setProductSuccess(false);
+            imageArray.forEach(async(item:string|any|null)=>{
+                await deleteImage(item);
+            })
+           }
+   }
+},[productLoading])
+ 
+  const handleSwitchChange = (checked: boolean) => {
+    setSwitchValue(checked); // Update the state when the switch value changes
+  };
+
+  console.log("switchValue", switchValue);
 
   return (
     <>
@@ -668,6 +708,20 @@ const Product = () => {
 
                         {productVariantDisplay}
 
+                        <div style={{width:"100%",display:"flex",alignItems:'center',justifyContent:"center",marginBottom:"1rem"}}>
+                           <p style={{fontFamily: "'Roboto', sans-serif",fontWeight:"bold",
+                           fontSize:"1.2rem",textAlign:"center",color:"#ed325e"}}>You have product variants ? &nbsp; 
+                            <span>
+                            <Switch
+                           checkedChildren="YES"
+                           unCheckedChildren="NO"
+                          defaultChecked={switchValue}
+                            onChange={handleSwitchChange} />
+      
+                            </span>
+                            </p>
+                        </div>
+
                   </div>
                    </section>
             </div>
@@ -683,6 +737,30 @@ const Product = () => {
       >
         <img alt="example" style={{ width: "100%" }} src={previewImage} />
       </Modal>
+
+
+
+      <Backdrop
+        sx={{ color: "#ffd700", zIndex: "9999999999999" }}
+        open={productLoading}
+      >
+        <CircularProgress color="inherit" size={50} />
+      </Backdrop>
+
+      <Backdrop
+        sx={{ color: "#ffd700", zIndex: "9999999999999" }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" size={50} />
+      </Backdrop>
+      
+
+     {productSuccess &&  <SnackBar
+          severity="success"
+          message="Product created successfully !"
+          open={productSuccess}
+          setOpen={setProductSuccess}
+        />}
         
         </>
   )
