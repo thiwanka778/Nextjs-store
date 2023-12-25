@@ -3,16 +3,19 @@ import React ,{useState} from 'react';
 import "./Product.css";
 import { nanoid } from "@reduxjs/toolkit";
 import TextField from '@mui/material/TextField';
+import { AlignType } from 'rc-table/lib/interface';
 import { useDispatch,useSelector } from 'react-redux';
 import Autocomplete from '@mui/material/Autocomplete';
+import Pagination from '@mui/material/Pagination';
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import { redirect } from "next/navigation";
-import { Modal, Upload, message,Switch } from "antd";
+import { redirect,useRouter  } from "next/navigation";
+import { Modal, Upload, message,Switch,Table } from "antd";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
 import { getAllCategory } from '@/redux/features/categorySlice';
 import { getAllStores } from '@/redux/features/storeSlice';
+import type { ColumnsType } from "antd/es/table";
 import CusButton from '../components/CusButton/CusButton';
 import {
   ref,
@@ -23,7 +26,8 @@ import {
 } from "firebase/storage";
 import { storage } from "../firebaseConfig";
 import SnackBar from '../components/SnackBar/SnackBar';
-import { createProduct, resetProduct } from '@/redux/features/productSlice';
+import { createProduct, getAllProducts, resetProduct } from '@/redux/features/productSlice';
+import moment from 'moment';
 
 
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -72,29 +76,119 @@ interface ProductVariantType {
   "quantityErrorMessage":string|any|null,
 }
 
+interface DataType {
+  id: any;
+  name: any;
+  description: any;
+  price: any;
+  quantity: any;
+  mainCategoryId: any;
+  subCategoryId: any;
+  mainCategoryName: any;
+  subCategoryName: any;
+  storeName: any;
+  storeId: any;
+  createdDate: any;
+  productImageList: any[];
+  productVariantList: any[];
+  deleted: boolean;
+}
+
 
 const Product = () => {
+  const router=useRouter();
+ 
+  const goToProductPage=async(id:any)=>{
+    router.push(`/product/${id}`)
+  }
+  const columns: ColumnsType<DataType> = [
+    {
+      title: "Product",
+      key: "name",
+      render:(_:any,{name,productImageList,createdDate,id}:any)=>{
+        // console.log(productImageList[0]?.productImageUrl,"productImageList[0]?.productImageUrl")
+        const relativeDate:any=moment(createdDate).fromNow();
+        return (
+          <div style={{display:'flex',alignItems:"center",cursor:'pointer'}} onClick={()=>goToProductPage(id)}>
+              <img src={productImageList[0]?.productImageUrl} style={{width:"60px",borderRadius:"8px",}}/>
+              <div  style={{marginLeft:'1rem',display:'flex',flexDirection:'column'}}>
+              <span>{name}</span>
+              <span style={{color:'gray'}}>{relativeDate}</span>
+              </div>
+             
+          </div>
+        )
+      }
+    },
+    {
+      title: 'Created Date',
+      key: 'createdDate',
+      render:(_:any,{createdDate}:any)=>{
+        const relativeDate:any=moment(createdDate).format('MMMM Do YYYY, h:mm a');
+        return (
+          <span>{relativeDate}</span>
+        )
+      }
+    },
+    {
+      title: 'Inventory',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      align: 'right' as const,
+    },
+    {
+      title: 'Price',
+      dataIndex:'price',
+      key:'price',
+      align: 'right' as const,
+    },
+   
+    {
+      title: "Main Category",
+      dataIndex: "mainCategoryName",
+      key: "mainCategoryName",
+    },
+    {
+      title: "Sub Category",
+      dataIndex: "subCategoryName",
+      key: "subCategoryName",
+    },
+    {
+      title: "Store",
+      dataIndex: "storeName",
+      key: "storeName",
+    },
+   
+  ];
     const dispatch=useDispatch();
     const {user}=useSelector((state:any)=>state.user);
+    
     const [loading, setLoading] = useState(false);
     const {categoryList}=useSelector((state:any)=>state.category);
     const {getStoreData}=useSelector((state:any)=>state.store);
     const {    productLoading,
       createProductStatus,
-      createProductErrorMessage,}=useSelector((state:any)=>state.product);
+      createProductErrorMessage,
+    productObject}=useSelector((state:any)=>state.product);
     const [productSuccess, setProductSuccess]=useState(false);
     const [imageArray,setImageArray]=useState<any[]>([]);
     const [fileList, setFileList] = useState<UploadFile[] | any[]>([]);
     const [previewImage, setPreviewImage] = useState("");
     const [selectedSubCategory, setSelectedSubCategory] = useState<any|null>(null); 
+    const [selectedMainCategory, setSelectedMainCategory] = useState<null|any>(null);
+    const [selectedStore, setSelectedStore] = React.useState<any|null>(null);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewTitle, setPreviewTitle] = useState("");
     const [mainList, setMainList]=React.useState<MainCategory[]>([]);
     const [subList,setSubList]=React.useState<SubCategory[]>([]);
-    const [selectedMainCategory, setSelectedMainCategory] = useState<null|any>(null);
+  
     const [storeList,setStoreList]=useState<Store[]>([]);
     const [switchValue, setSwitchValue] = useState(false); 
-    const [selectedStore, setSelectedStore] = React.useState<any|null>(null);
+
+    const [productList,setProductList]=useState<any[]>([]);
+    const [page,setPage]=useState<number>(1);
+    const itemsPerPage:number=10;
+    const [totalPages,setTotalPages]=React.useState<number>(1);
     const [productData, setProductData] = useState<any|null>({
       name: '',
       description: '',
@@ -114,6 +208,31 @@ const Product = () => {
         "quantityErrorMessage":"",
       }
     ]);
+
+    React.useLayoutEffect(() => {
+      if (!user) {
+        redirect("/");
+      } else {
+        dispatch(getAllProducts(1));
+      }
+    }, [user]);
+
+
+    React.useEffect(()=>{
+      if(productObject){
+        setProductList(productObject?.productList)
+        if(productObject?.productList?.length>=1){
+          const total = Math.ceil(productObject?.totalCount / itemsPerPage);
+             setTotalPages(total)
+        }else{
+          setTotalPages(1);
+        }
+      }
+    },[productObject]);
+
+    console.log("productObject : ",productList)
+
+
 
     function isNumberGreaterThanZero(value:any) {
       return !isNaN(value) && Number(value) > 0;
@@ -137,10 +256,6 @@ const Product = () => {
            quantityValid=isIntegerGreaterThanZero(value);
         }
 
-        // console.log("priceValid : ",priceValid)
-        // console.log("quantityValid: ",quantityValid)
-
-  
 
       setProductData((prevData:any)=>{
           return {
@@ -155,11 +270,6 @@ const Product = () => {
 
     // console.log(productData)
 
-    React.useLayoutEffect(() => {
-      if (!user) {
-        redirect("/");
-      }
-    }, [user]);
 
     React.useEffect(()=>{
       dispatch(getAllCategory())
@@ -226,9 +336,6 @@ const Product = () => {
     setSelectedMainCategory(newValue);
    
   };
-
-
-
   
 
   const handleSubCategoryChange = (event:any, newValue:any) => {
@@ -375,19 +482,6 @@ const Product = () => {
 
   // console.log("productVariantList", productVariantList)
 
-  // name: '',
-  // description: '',
-  // price: '',
-  // totalQuantity: '',
-  // priceErrorMessage: '',
-  // quantityErrorMessage: '',
-
-  // "optionTitle": "",
-  // "optionName": "",
-  // "price": "",
-  // "quantity": "",
-  // "priceErrorMessage":"",
-  // "quantityErrorMessage":"",
 
   const uploadImageToFirebase = async (file: File | any | null) => {
     console.log("uploadImageToFirebase running");
@@ -443,18 +537,8 @@ const Product = () => {
   };
 
 
- 
- 
- 
-
-
-        
-   
-
-
-
-
   const saveProductClick=async()=>{
+    setImageArray([]);
 
     if(productData?.name?.trim()=="" || productData?.description?.trim()=="" || 
      productData?.price?.trim()=="" || productData?.totalQuantity?.trim()=="" ||
@@ -542,6 +626,8 @@ React.useEffect(()=>{
    if(productLoading===false){
            if(createProductStatus===true){
             // product created successfully
+            dispatch(getAllProducts(page));
+            setImageArray([]);
             dispatch(resetProduct());
               setProductSuccess(true);
            }else if (createProductStatus===false && createProductErrorMessage==="Unauthorized"){
@@ -564,11 +650,22 @@ React.useEffect(()=>{
     setSwitchValue(checked); // Update the state when the switch value changes
   };
 
-  console.log("switchValue", switchValue);
+  // console.log("switchValue", switchValue);
+
+  const handlePageChange = (event:any, value:any) => {
+    setPage(value);
+    dispatch(getAllProducts(value));
+  };
+
+  // console.log("PAGE : ",page);
+
+
 
   return (
     <>
     <div className='product-page'>
+
+
              <div className='product-main-box'>
                   <section className='product-main-box-a'>
                       <div className='create-product-box'>
@@ -724,6 +821,15 @@ React.useEffect(()=>{
 
                   </div>
                    </section>
+            </div>
+
+
+            <div style={{width:"100%",marginTop:"2rem",padding:'0.5rem',overflowX:'auto'}}>
+            <Table columns={columns} dataSource={productList} pagination={false} /> 
+              <div style={{width:"100%",display:'flex',alignItems:'center',justifyContent:'flex-end',marginTop:'1rem',}}>
+                 <Pagination count={totalPages} color="primary"     page={page}
+        onChange={handlePageChange} />
+              </div>
             </div>
         </div>
 

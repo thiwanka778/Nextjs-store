@@ -40,7 +40,8 @@ const data:any={
               fontFamily: "'Ubuntu', sans-serif"}}>{formattedTime}</p>
             </div>
 
-            <div style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",overflowX:"auto",marginBottom:"1rem"}}>
+            <div style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",
+            overflowX:"auto",marginBottom:"1rem"}}>
               <p 
               style={{textAlign:"center",fontSize:"1.5rem",fontWeight:"bold",
               fontFamily: "'Ubuntu', sans-serif"}}>{name}</p>
@@ -86,7 +87,7 @@ const data:any={
             </div>
 
 
-            <div style={{width:"100%",display:"flex",marginTop:"0.5rem"}}>
+            <div style={{width:"100%",display:"flex",marginTop:"0.5rem",overflowX:'auto'}}>
             <LocationOnIcon
                       sx={{
                         fontSize: 20,

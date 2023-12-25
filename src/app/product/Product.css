@@ -104,3 +104,23 @@
   .delete-button:active{
     transform: scale(0.7);
   }
+
+  .product-image-container{
+    display: grid;
+    grid-gap: 10;
+     grid-template-columns: repeat(auto-fill,minmax(105px, 1fr));
+  }
+
+  .delete-image{
+    width:100%;
+    border: none;
+    background-color: red;
+    color:white;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .delete-image:active{
+    transform: scale(0.8);
+  }
