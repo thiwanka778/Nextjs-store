@@ -31,11 +31,11 @@ const HomeNav = () => {
 
   return (
     <div className="home-nav">
-      <span style={{ marginRight: "auto" }}>Home Nav</span>
+      <span style={{ marginRight: "auto" }}>Home</span>
 
      
     <Link href="/" className="nav-title" 
-      style={{marginRight:"1rem",color:"black"}}>Home<span className="under-line">
+      style={{marginRight:"0.5rem",color:"black"}}>Home<span className="under-line">
         </span>
         </Link>
        
@@ -44,11 +44,11 @@ const HomeNav = () => {
     
 
     {user &&   <Link href="/user-dashboard" className="nav-title" 
-      style={{marginRight:"1rem"}}>Dashboard<span className="under-line">
+      style={{marginRight:"0.5rem"}}>Dashboard<span className="under-line">
         </span></Link>}
 
         {!user &&   <span className="nav-title" 
-      style={{marginRight:"1rem"}} onClick={goToLogin}>Login<span className="under-line">
+      style={{marginRight:"0.5rem"}} onClick={goToLogin}>Login<span className="under-line">
         </span></span>}
 
     

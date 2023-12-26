@@ -17,6 +17,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { Modal } from "antd";
 import "./globals.css";
 import PasswordInput from "./components/PasswordInput/PasswordInput";
+import Pagination from '@mui/material/Pagination';
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SnackBar from "./components/SnackBar/SnackBar";
@@ -66,11 +67,23 @@ export default function Home() {
     return <Product key={item?.id} item={item} />;
   });
 
+  const handlePageChange = (event:any, value:any) => {
+    setPage(value);
+    dispatch(getAllProductsPublic(value));
+  };
+
   return (
     <>
-      <div>
+      <div className="main-home-page">
         <HomeNav />
         <div className="home-page-product-container">{productListDisplay}</div>
+
+          <div style={{maxWidth:'98%',  display:'flex',alignItems:'center',justifyContent:'center',
+                          overflowX:"auto",marginTop:'1rem',marginBottom:'1rem'}}>
+                          <Pagination count={totalPages} color="primary"  page={page}
+                               onChange={handlePageChange} />
+          </div>
+        
       </div>
     </>
   );

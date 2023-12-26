@@ -41,7 +41,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
 
 
 
-
+// bulla
 
 interface SubCategory {
   id: number|string;
@@ -684,7 +684,11 @@ React.useEffect(()=>{
                       variant="outlined" sx={{marginBottom:"1rem"}} />
 
 
-                      <TextField  label="Description" size="small" 
+                      <TextField 
+                      inputProps={{ maxLength: 254 }}
+                       multiline 
+                       rows={4}
+                       label="Description" size="small" 
                         name="description"
                         value={productData.description}
                         onChange={handleInputChange}
@@ -828,7 +832,7 @@ React.useEffect(()=>{
             <Table columns={columns} dataSource={productList} pagination={false} /> 
               <div style={{width:"100%",display:'flex',alignItems:'center',justifyContent:'flex-end',marginTop:'1rem',}}>
                  <Pagination count={totalPages} color="primary"     page={page}
-        onChange={handlePageChange} />
+                            onChange={handlePageChange} />
               </div>
             </div>
         </div>

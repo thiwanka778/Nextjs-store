@@ -104,11 +104,12 @@ const ProductPage = ({params: {productId}}:Params) => {
          if(productId){
              dispatch(getProductById(productId))
          }
-      },[productId]);
+      },[productId,user]);
 
-console.log("requiredProduct", requiredProduct);
+// console.log("requiredProduct", requiredProduct);
 
 const [loading, setLoading] = useState(false);
+const [productVariantSuccess, setProductVariantSuccess]=useState(false);
 const {categoryList}=useSelector((state:any)=>state.category);
 const {getStoreData}=useSelector((state:any)=>state.store);
 const [productSuccess, setProductSuccess]=useState(false);
@@ -724,12 +725,15 @@ React.useEffect(()=>{
       dispatch(resetProduct());
       setProductVariantError("");
       dispatch(getProductById(productId));
+      setProductVariantSuccess(true);
 
      }else if(updateProductVariantStatus===false && updateProductVariantErrorMessage==="Unauthorized"){
       dispatch(resetProduct());
+      setProductVariantSuccess(false);
       setProductVariantError("*your session is expired. please login again");
      }else if(updateProductVariantStatus===false && updateProductVariantErrorMessage==="Internal Server Error"){
       dispatch(resetProduct());
+      setProductVariantSuccess(false);
       setProductVariantError("*Something went wrong. try again");
      }
    }
@@ -762,7 +766,11 @@ React.useEffect(()=>{
                       variant="outlined" sx={{marginBottom:"1rem"}} />
 
 
-                      <TextField  label="Description" size="small" 
+                      <TextField 
+                      inputProps={{ maxLength: 254 }}
+                       multiline 
+                       rows={4}
+                       label="Description" size="small" 
                         name="description"
                         value={productData.description}
                         onChange={handleInputChange}
@@ -994,6 +1002,13 @@ React.useEffect(()=>{
           message="Product updated successfully !"
           open={productSuccess}
           setOpen={setProductSuccess}
+        />}
+
+{productVariantSuccess &&  <SnackBar
+          severity="success"
+          message="Product variants updated successfully !"
+          open={productVariantSuccess}
+          setOpen={setProductVariantSuccess}
         />}
         
         </>

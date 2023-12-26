@@ -77,7 +77,8 @@ export default function Login() {
        setOpen(true)
     }else{
       const payload={
-        email,password
+        email:email?.trim(),
+        password
       }
            dispatch(authLogin(payload))
     }

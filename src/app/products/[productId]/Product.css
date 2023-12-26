@@ -1,0 +1,46 @@
+.user-product-page{
+    width:100%;
+    padding:0.5rem;
+}
+
+.user-product-page-box{
+    display:flex;
+    width:100%;
+}
+.user-product-page-box-a{
+    flex:1;
+    flex-direction: column;
+    align-items: center;
+    padding:0.5rem;
+
+}
+
+.user-product-page-box-b{
+    flex:1;
+    flex-direction: column;
+    align-items: center;
+    padding:0.5rem;
+
+}
+
+.user-product-page-box-c{
+    flex:1;
+    flex-direction: column;
+    align-items: center;
+    padding:0.5rem;
+
+}
+
+.product-little-image-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(85px,1fr));
+}
+
+.product-option-name{
+    font-family: 'Roboto', sans-serif;
+    width:100%;
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px;
+    
+}

@@ -1,17 +1,25 @@
+'use client';
 import React from 'react';
 import './Product.css';
 import moment from 'moment';
 import { Rate } from "antd";
+import { useRouter } from "next/navigation";
+
+
+
+
 
 const Product = ({item}:any) => {
-   
+  const router = useRouter();
 
 const userFriendlyDate:any|string|null = moment(item?.createdDate).fromNow();
 
   return (
-    <div className='product-card'>
-        <img src={item?.productImageList[0]?.productImageUrl} 
-        style={{width:'100%',borderRadius:'10px',height:300}}/>
+    <div className='product-card'  >
+
+        <img    onClick={()=>router.push(`/products/${item?.id}`)}  
+        className='product-image-style' src={item?.productImageList[0]?.productImageUrl} 
+        />
 
         <div style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'flex-end'}}>
               <p style={{fontFamily: "'Roboto', sans-serif",

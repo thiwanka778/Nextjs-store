@@ -214,11 +214,27 @@
   }
 }
 
+.main-home-page{
+  width:100%;
+}
+
 
 .home-page-product-container{
   display: grid;
   padding:0.5rem;
-   grid-template-columns: repeat(auto-fill,minmax(300px, 1fr));
+   grid-template-columns: repeat(auto-fit,minmax(310px, 1fr));
+}
+
+@media screen and (max-width: 499px) {
+  .home-page-product-container{
+    display: flex;
+    padding:1rem;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+
+ 
 }
 
 
