@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import successImage from "../../assets/success.png";
+import axios from "axios";
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import {
   authLogin,
   decrementCount,
@@ -72,6 +75,8 @@ export default function Home() {
     dispatch(getAllProductsPublic(value));
   };
 
+ 
+
   return (
     <>
       <div className="main-home-page">
@@ -85,6 +90,15 @@ export default function Home() {
           </div>
         
       </div>
+
+
+
+      <Backdrop
+        sx={{ color: "#ffd700", zIndex: "9999999999999" }}
+        open={productLoading}
+      >
+        <CircularProgress color="inherit" size={50} />
+      </Backdrop>
     </>
   );
 }

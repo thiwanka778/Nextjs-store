@@ -29,6 +29,9 @@ interface initialStateType {
     resetPasswordLoading:boolean,
     resetPasswordStatus:boolean,
     resetPasswordErrorMessage:any|null|string,
+
+    lat:number|string|any|null,
+    lng:number|string|any|null,
 }
 
 // const localUser= localStorage.getItem("user");
@@ -75,6 +78,9 @@ const initialState:initialStateType = {
     resetPasswordLoading:false,
     resetPasswordStatus:false,
     resetPasswordErrorMessage:"",
+
+    lat:"",
+    lng:"",
 }
 
 export const addNewUser:any = createAsyncThunk(
@@ -314,6 +320,13 @@ export const userSlice:any=createSlice({
            decrementCount:(state:any,action:any)=>{
             state.count=state.count-1;
           },
+
+          getLocation:(state:any,action:any)=>{
+     
+             state.lat=action.payload.lat;
+             state.lng=action.payload.lng;
+
+          },
           resetUser:(state:any)=>{
             
             state.signUpStatus = false;
@@ -491,5 +504,5 @@ export const userSlice:any=createSlice({
 
 })
 
-export const {incrementCount,decrementCount,resetUser,userLogout}=userSlice.actions;
+export const {incrementCount,decrementCount,resetUser,userLogout,getLocation}=userSlice.actions;
 export default userSlice.reducer;

@@ -94,6 +94,14 @@ interface DataType {
   deleted: boolean;
 }
 
+interface VariantCombinationType{
+  name:string|null|any;
+  price:string|null|any|number;
+  quantity:string|null|any|number;
+  priceErrorMessage:string|null|any;
+  quantityErrorMessage:string|null|any;
+}
+
 
 const Product = () => {
   const router=useRouter();
@@ -209,6 +217,23 @@ const Product = () => {
       }
     ]);
 
+    const [variantCombination,setVariantCombination]=useState<VariantCombinationType[]>([{
+      name:'',
+      price:'',
+      quantity:'',
+      priceErrorMessage:'',
+      quantityErrorMessage:'',
+
+    }]);
+    const [variantCombination2,setVariantCombination2]=useState<VariantCombinationType[]>([{
+      name:'',
+      price:'',
+      quantity:'',
+      priceErrorMessage:'',
+      quantityErrorMessage:'',
+
+    }]);
+
     React.useLayoutEffect(() => {
       if (!user) {
         redirect("/");
@@ -230,7 +255,7 @@ const Product = () => {
       }
     },[productObject]);
 
-    console.log("productObject : ",productList)
+    // console.log("productObject : ",productList)
 
 
 
@@ -358,36 +383,6 @@ const Product = () => {
     const { name, value } = event.target;
     let updatedVariantList:any = [...productVariantList];
     updatedVariantList[index][name] = value;
-    
-    if(name==="price" ){
-      let newArray:any[]=[];
-      for(let i=0;i<updatedVariantList?.length;i++){
-        const currentObject:any= updatedVariantList[i];
-        const priceValid= isNumberGreaterThanZero(currentObject?.price);
-        const updatedObject:any={
-          ...currentObject,
-          "priceErrorMessage":(priceValid || currentObject?.price?.trim() =="")?"":"*Price must be a number and greater than 0",
-        };
-        newArray.push(updatedObject)
-
-      }
-      updatedVariantList=[...newArray];
-    }
-    if(name==="quantity" ){
-      let newArray:any[]=[];
-      for(let i=0;i<updatedVariantList?.length;i++){
-        const currentObject:any= updatedVariantList[i];
-        const quantityValid= isIntegerGreaterThanZero(currentObject?.quantity);
-        const updatedObject:any={
-          ...currentObject,
-          "quantityErrorMessage":(quantityValid || currentObject?.quantity?.trim()=="") ?"":"*Invalid quantity",
-        };
-        newArray.push(updatedObject)
-
-      }
-      updatedVariantList=[...newArray];
-    }
-  
     setProductVariantList(updatedVariantList);
   };
 
@@ -443,29 +438,30 @@ const Product = () => {
                           onChange={(event) => handleVariantInputChange(index, event)}
                         variant="outlined" sx={{marginBottom:"1rem"}} />
   
-               <TextField  label="Price" 
-             
+               {/* <TextField  label="Price" 
                size="small" 
                           name="price"
                           value={item.price}
                           onChange={(event) => handleVariantInputChange(index, event)}
-                        variant="outlined" sx={{marginBottom:"0rem"}} />
-                        <p style={{color:"red",fontSize:"0.9rem",fontWeight:"bold",marginBottom:"1rem",
+                        variant="outlined" sx={{marginBottom:"0rem"}} /> */}
+
+                        {/* <p style={{color:"red",fontSize:"0.9rem",fontWeight:"bold",marginBottom:"1rem",
                       fontFamily: "'Roboto', sans-serif"}}>
-                          {item?.priceErrorMessage}</p>
+                          {item?.priceErrorMessage}</p> */}
   
-            <TextField 
+            {/* <TextField 
            
              label="Quantity" size="small" 
                value={item.quantity}
                onChange={(event) => handleVariantInputChange(index, event)}
                           name="quantity"
-                        variant="outlined" sx={{marginBottom:"0rem"}} />
-                         <p style={{color:"red",
+                        variant="outlined" sx={{marginBottom:"0rem"}} /> */}
+
+                         {/* <p style={{color:"red",
                          fontFamily: "'Roboto', sans-serif",
                          fontSize:"0.9rem",fontWeight:"bold",marginBottom:"1rem"}}>
                           {item?.quantityErrorMessage}
-                          </p>
+                          </p> */}
 
                         <div style={{marginBottom:"1rem",display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
                              <button className='add-button' 
@@ -537,6 +533,122 @@ const Product = () => {
   };
 
 
+
+  function generateCombinations(variantList:any) {
+
+    const optionTitleArray= variantList?.map((item:any)=>{
+       return item?.optionTitle?.toLowerCase()?.trim();
+    })
+    const optionTitleSet:any = new Set(optionTitleArray);
+
+
+    const optionTitles:any = Array.from(optionTitleSet);
+
+    const optionsMap:any = {};
+
+    // Group variants by option title
+    for (const variant of variantList) {
+        if (!optionsMap[variant.optionTitle]) {
+            optionsMap[variant.optionTitle] = [];
+        }
+        optionsMap[variant.optionTitle].push(variant.optionName?.trim());
+    }
+
+    let combinations = [''];
+
+    for (const title of optionTitles) {
+        const newCombinations:any = [];
+        for (const combination of combinations) {
+            for (const option of optionsMap[title]) {
+                newCombinations.push(combination + (combination ? '/' : '') + option);
+            }
+        }
+        combinations = newCombinations;
+    }
+
+    return combinations;
+}
+
+React.useEffect(()=>{
+
+  if(productVariantList && Array.isArray(productVariantList)){
+     const variantList = productVariantList?.map((item:any)=>{
+         return {
+          "optionTitle": item?.optionTitle?.toLowerCase()?.trim(),
+        "optionName": item?.optionName,
+         }
+     });
+
+     const combinations:any = generateCombinations(variantList);
+     
+     let combinationArray:any = combinations?.map((item:string)=>{
+       return {
+        name:item?.toUpperCase()?.trim(),
+        price:'',
+        quantity:'',
+        priceErrorMessage:'',
+        quantityErrorMessage:'',
+       }
+     });
+
+    //  console.log("combinationArray : ",combinationArray)
+    //  console.log( "variantCombination : ", variantCombination)
+
+     for (let i = 0; i < combinationArray.length; i++) {
+      combinationArray[i].price = variantCombination2[i]?.price?variantCombination2[i]?.price:'';
+      combinationArray[i].quantity = variantCombination2[i]?.quantity?variantCombination2[i]?.quantity:'';
+  }
+
+     if(combinationArray && Array.isArray(combinationArray)){
+       setVariantCombination(combinationArray);
+     }
+
+  }
+
+},[productVariantList])
+
+// console.log("combinations pamka  : variantCombination ",variantCombination);
+
+const handleVariantCombinationChange = (index:number, field:string, value:any) => {
+  let updatedVariantCombination:any = [...variantCombination];
+  if(field==='price'){
+    updatedVariantCombination[index].price=value?isNaN(value)?updatedVariantCombination[index].price:Number(value):'';
+  }else if(field === 'quantity'){
+    updatedVariantCombination[index].quantity=value?isNaN(value)?updatedVariantCombination[index].quantity:Number(value)>=0?parseInt(value):updatedVariantCombination[index].quantity:'';
+  }else{
+    updatedVariantCombination[index][field] = value;
+  }
+  
+  setVariantCombination(updatedVariantCombination);
+  setVariantCombination2(updatedVariantCombination);
+  
+};
+
+const variantCombinationDisplay:any = variantCombination?.map((item:any,index:number)=>{
+     return (
+      <div  key={index} 
+       style={{width:'100%',padding:'1rem',borderRadius:'10px',
+       boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',marginBottom:'1rem'  }}>
+
+            <p style={{fontFamily: "'Roboto', sans-serif",marginBottom:'1rem',fontWeight:'bold',}}>{item?.name}</p>
+                  <TextField  label="Price" size="small" 
+                        name="price"
+                        value={item.price}  // Bind the value from state
+                        onChange={(e) => handleVariantCombinationChange(index, 'price', e.target.value)} 
+                      variant="outlined" sx={{marginBottom:"1rem",width:'100%'}} />
+
+                     <TextField  label="Quantity" size="small" 
+                        name="quantity"
+                        value={item?.quantity}
+                        onChange={(e) => handleVariantCombinationChange(index, 'quantity', e.target.value)} 
+                      variant="outlined" sx={{marginBottom:"1rem",width:'100%'}} />
+      </div>
+     )
+})
+
+
+
+
   const saveProductClick=async()=>{
     setImageArray([]);
 
@@ -564,25 +676,46 @@ const Product = () => {
 
   if(switchValue==true){
     for(let i=0;i<productVariantList?.length;i++){
+
       if(productVariantList[i]?.optionTitle?.trim()=="" ||
-      productVariantList[i]?.optionName?.trim()=="" || 
-      productVariantList[i]?.price?.trim()=="" || 
-      productVariantList[i]?.quantity?.trim()==""  || 
-      productVariantList[i]?.priceErrorMessage?.trim()!="" || 
-      productVariantList[i]?.quantityErrorMessage?.trim()!=""){
+      productVariantList[i]?.optionName?.trim()==""){
             return;  
       }
    };
   }
+
+  if(switchValue){
+    for(let i=0;i<variantCombination?.length;i++){
+       if(variantCombination[i]?.name?.trim()==''||
+       !variantCombination[i]?.price || variantCombination[i]?.quantity===''){
+         return;
+       }
+    }
+  }
+
+  const preparedVariantCombination:any = variantCombination?.map((item:any)=>{
+      return {
+         name:item?.name?.toUpperCase()?.trim(),
+         price:isNaN(item?.price)?0:parseFloat(item?.price),
+         quantity:isNaN(item?.quantity)?0:parseInt(item?.quantity),
+      }
+  })
+
+
     
-    const preparedVariants= productVariantList?.map((item:ProductVariantType)=>{
+    const preparedVariants:any= productVariantList?.map((item:ProductVariantType)=>{
        return {
         "optionTitle": item?.optionTitle?.trim(),
         "optionName": item?.optionName?.trim(),
-        "price": isNaN(item?.price)?0:parseFloat(item?.price),
-        "quantity": isNaN(item?.quantity)?0:parseInt(item?.quantity),
+        "price":0,
+        "quantity":0,
+        // "price": isNaN(item?.price)?0:parseFloat(item?.price),
+        // "quantity": isNaN(item?.quantity)?0:parseInt(item?.quantity),
        }
     });
+
+
+
 
     let uploadedURLs:any[] = [];
 
@@ -609,6 +742,7 @@ const Product = () => {
                 "storeId": selectedStore?.id,
                 "productImages": preparedImagesArray,
                 "productVariants": switchValue===false?[]:preparedVariants,
+                "variantCombinations": switchValue===false?[]:preparedVariantCombination,
               };
           
               // console.log("payload : ",payload);
@@ -627,6 +761,16 @@ React.useEffect(()=>{
            if(createProductStatus===true){
             // product created successfully
             dispatch(getAllProducts(page));
+            setProductVariantList([{
+              "optionTitle": "",
+              "optionName": "",
+              "price": "",
+              "quantity": "",
+              "priceErrorMessage":"",
+              "quantityErrorMessage":"",
+            }]);
+            setVariantCombination([]);
+            setVariantCombination2([]);
             setImageArray([]);
             dispatch(resetProduct());
               setProductSuccess(true);
@@ -790,6 +934,16 @@ React.useEffect(()=>{
                   </p>
                 </div>
               </Upload>
+
+             {switchValue && <div style={{width:'100%',marginBottom:'1rem',display:'flex',flexDirection:'column',marginTop:'1rem'}}>
+              <p style={{marginBottom:"1rem",
+              fontWeight:'bold',fontSize:'1.2rem',
+              fontFamily: "'Ubuntu', sans-serif"}}>
+                You have {variantCombination?.length} different {variantCombination?.length===1?'combination.':variantCombination?.length>1?'combinations':''}</p>
+
+                 {variantCombinationDisplay}
+
+              </div>}
 
               <div style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"flex-end",marginTop:"1rem"}}>
                   <span style={{width:"fit-content"}} onClick={saveProductClick}><CusButton name={"SAVE PRODUCT"}/></span>
