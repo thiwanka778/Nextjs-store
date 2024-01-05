@@ -56,3 +56,28 @@
     gap: 10px;
     
 }
+
+.checkout-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Ubuntu', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: 0.1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #f79a05; /* Change the color to your preference */
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  /* Hover effect */
+  .checkout-btn:hover {
+    background-color: #cc8006; /* Change the hover color if desired */
+  }
+  .checkout-btn:active{
+    transform: scale(0.7);
+  }

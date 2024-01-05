@@ -52,6 +52,7 @@ const ProductDetails = ({ params: { productId } }: Params) => {
   const { user, lat, lng } = useSelector((state: any) => state.user);
   const [product, setProduct] = useState<ProductType | null | any>(null);
   const [text, setText] = useState<string>("");
+  const [isCheckOut,setIsCheckOut]=useState<boolean>(false);
   const [isSelectedAdded, setIsSelectedAdded] = useState(false);
   const [selectedOption, setSelectedOption] = useState<any | null | string>("");
   const [productImages, setProductImages] = useState<any[]>([]);
@@ -202,12 +203,12 @@ const ProductDetails = ({ params: { productId } }: Params) => {
     const optionKeys: any = Object.keys(options);
 
     // Constructing the sentence dynamically based on available properties
-    let sentence: string = `You have selected ${product?.name}, the`;
+    let sentence: string = `You have selected ${product?.name}, `;
 
     optionKeys?.forEach((key: any, index: number) => {
       sentence += ` ${key.toLowerCase()} is ${options[key]}`;
       if (index !== optionKeys.length - 1) {
-        sentence += " and the";
+        sentence += " and";
       } else {
         sentence += ".";
       }
@@ -382,7 +383,7 @@ const ProductDetails = ({ params: { productId } }: Params) => {
   // map pamka balla
 
   const getAddressFromPlaceId = async (placeId: any) => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY; // Replace with your Google Maps API key
+    const apiKey:any = process.env.NEXT_PUBLIC_GOOGLE_API_KEY; // Replace with your Google Maps API key
     if (!placeId) {
       return;
     }
@@ -452,9 +453,9 @@ const ProductDetails = ({ params: { productId } }: Params) => {
   };
 
   React.useEffect(() => {
-    if(lat && lng){
+   
       getPlaceIdFromLatLng(lat, lng);
-    }
+    
     
   }, [lat, lng]);
 
@@ -567,9 +568,13 @@ const ProductDetails = ({ params: { productId } }: Params) => {
     );
   };
 
+  const checkoutClick=()=>{
+    setIsCheckOut(true);
+  }
+
   return (
     <>
-      {requiredProduct && (
+      {requiredProduct && !isCheckOut && (
         <div className="user-product-page">
           <div className="user-product-page-box">
             <section className="user-product-page-box-a">
@@ -1174,10 +1179,607 @@ const ProductDetails = ({ params: { productId } }: Params) => {
               <div style={{ marginTop: "1rem", width: "100%" }}>
                 <MapComponent />
               </div>
+
+              <div style={{ marginTop: "1rem", width: "100%" ,display:'flex',alignItems:'center',justifyContent:'flex-end'}}>
+              <button onClick={checkoutClick} className="checkout-btn">CHECKOUT</button>
+              </div>
+
             </section>
           </div>
         </div>
       )}
+
+
+      {/* Checkout page komlo */}
+
+
+ {requiredProduct && isCheckOut && (
+        <div className="user-product-page">
+          <div className="user-product-page-box">
+
+
+            <section className="user-product-page-box-b">
+              <p
+                style={{
+                  fontSize: "1.5rem",
+                  marginBottom: "0.5rem",
+                  fontFamily: "'Ubuntu', sans-serif",
+                  fontWeight: "bold",
+                }}
+              >
+                {product?.name}
+              </p>
+
+              <p
+                style={{
+                  fontSize: "1.3rem",
+                  marginBottom: "0.5rem",
+                  color: "#f51105",
+                  fontFamily: "'Poppins', sans-serif",
+                  fontWeight: "bold",
+                }}
+              >
+                LKR {selectedOption ? selectedOption?.price : product?.price}
+              </p>
+
+              <p
+                style={{
+                  fontSize: "1rem",
+                  marginBottom: "0.5rem",
+                  color: "#8e91ad",
+                  fontFamily: "'Roboto', sans-serif",
+                  fontWeight: "500",
+                }}
+              >
+                {product?.description}
+              </p>
+
+              {/* <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {productOptionsDisplay}
+              </div> */}
+
+              {selectedOption && selectedOption?.quantity >= 1 && (
+                <div style={{ width: "100%", marginBottom: "0.5rem" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      color: "#616469",
+                    }}
+                  >
+                    <span style={{ color: "#f01202", fontWeight: "bold" }}>
+                      {requiredProduct?.variantCombinationList?.length === 0
+                        ? product?.quantity
+                        : selectedOption?.quantity}
+                    </span>{" "}
+                    items are available.
+                  </p>
+                </div>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 &&
+                product?.quantity >= 1 && (
+                  <div style={{ width: "100%", marginBottom: "0.5rem" }}>
+                    <p
+                      style={{
+                        fontSize: "1rem",
+                        fontFamily: "'Roboto', sans-serif",
+                        fontWeight: "bold",
+                        color: "#616469",
+                      }}
+                    >
+                      <span style={{ color: "#f01202", fontWeight: "bold" }}>
+                        {requiredProduct?.variantCombinationList?.length === 0
+                          ? product?.quantity
+                          : selectedOption?.quantity}
+                      </span>{" "}
+                      items are available.
+                    </p>
+                  </div>
+                )}
+
+              {selectedOption && selectedOption?.quantity == 0 && (
+                <div style={{ width: "100%", marginBottom: "0.5rem" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      color: "#616469",
+                    }}
+                  >
+                    <span style={{ color: "#f01202", fontWeight: "bold" }}>
+                      Out of Stock
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 &&
+                product?.quantity == 0 && (
+                  <div style={{ width: "100%", marginBottom: "0.5rem" }}>
+                    <p
+                      style={{
+                        fontSize: "1rem",
+                        fontFamily: "'Roboto', sans-serif",
+                        fontWeight: "bold",
+                        color: "#616469",
+                      }}
+                    >
+                      <span style={{ color: "#f01202", fontWeight: "bold" }}>
+                        Out of Stock
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+              {selectedOption && selectedOption?.quantity >= 1 && (
+                <div
+                  style={{
+                    marginBottom: "0.5rem",
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <span
+                    onClick={decreaseCount}
+                    style={{
+                      border: "1px solid black",
+                      borderRadius: "5px",
+                      background: "black",
+                      width: "fit-content",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <RemoveIcon sx={{ color: "white" }} />
+                  </span>
+
+                  <span
+                    style={{
+                      marginRight: "0.5rem",
+                      marginLeft: "0.5rem",
+                      fontWeight: "bold",
+                      fontFamily: "'Poppins', sans-serif",
+                    }}
+                  >
+                    {count}
+                  </span>
+
+                  <span
+                    onClick={increaseCount}
+                    style={{
+                      border: "1px solid black",
+                      borderRadius: "5px",
+                      background: "black",
+                      width: "fit-content",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <AddIcon sx={{ color: "white" }} />
+                  </span>
+                </div>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 &&
+                product?.quantity >= 1 && (
+                  <div
+                    style={{
+                      marginBottom: "0.5rem",
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span
+                      onClick={decreaseCount}
+                      style={{
+                        border: "1px solid black",
+                        borderRadius: "5px",
+                        background: "black",
+                        width: "fit-content",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <RemoveIcon sx={{ color: "white" }} />
+                    </span>
+
+                    <span
+                      style={{
+                        marginRight: "0.5rem",
+                        marginLeft: "0.5rem",
+                        fontWeight: "bold",
+                        fontFamily: "'Poppins', sans-serif",
+                      }}
+                    >
+                      {count}
+                    </span>
+
+                    <span
+                      onClick={increaseCount}
+                      style={{
+                        border: "1px solid black",
+                        borderRadius: "5px",
+                        background: "black",
+                        width: "fit-content",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <AddIcon sx={{ color: "white" }} />
+                    </span>
+                  </div>
+                )}
+
+{selectedOption && (
+                <p
+                  style={{
+                    fontSize: "1rem",
+                    marginBottom: "0.5rem",
+                    fontFamily: "'Roboto', sans-serif",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Information regarding the selected product.
+                </p>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 && (
+                <p
+                  style={{
+                    fontSize: "1rem",
+                    marginBottom: "0.5rem",
+                    fontFamily: "'Roboto', sans-serif",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Information regarding the selected product.
+                </p>
+              )}
+
+              {text && text?.trim() != "" && selectedOption && (
+                <p
+                  style={{
+                    fontSize: "1rem",
+                    marginBottom: "0.5rem",
+                    fontFamily: "'Roboto', sans-serif",
+                    fontWeight: "500",
+                    color: "#8f8e99",
+                  }}
+                >
+                  {text}
+                </p>
+              )}
+
+              {selectedOption && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    Per item price
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#f51105",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR{" "}
+                    {selectedOption ? selectedOption?.price : product?.price}
+                  </p>
+                </div>
+              )}
+
+              {selectedOption && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    {count} items
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#f51105",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR{" "}
+                    {selectedOption ? selectedOption?.price : product?.price} X{" "}
+                    {count}
+                  </p>
+                </div>
+              )}
+
+              {selectedOption && shippingFee && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    Shipping fee
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#4402a8",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR {shippingFee.toFixed(2)}
+                  </p>
+                </div>
+              )}
+
+              {selectedOption && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    Total
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "black",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR{" "}
+                    {(
+                      Number(selectedOption?.price) * Number(count) +
+                        Number(shippingFee) || 0
+                    ).toFixed(2)}
+                  </p>
+                </div>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    Per item price
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#f51105",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR {product?.price}
+                  </p>
+                </div>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    {count} items
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#f51105",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR{" "}
+                    {selectedOption ? selectedOption?.price : product?.price} X{" "}
+                    {count}
+                  </p>
+                </div>
+              )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 &&
+                shippingFee && (
+                  <div style={{ width: "100%", display: "flex" }}>
+                    <p
+                      style={{
+                        fontSize: "1rem",
+                        marginBottom: "0.5rem",
+                        color: "#888794",
+                        fontFamily: "'Roboto', sans-serif",
+                        fontWeight: "bold",
+                        marginRight: "auto",
+                      }}
+                    >
+                      Shipping fee
+                    </p>
+                    <p
+                      style={{
+                        fontSize: "1rem",
+                        marginBottom: "0.5rem",
+                        color: "#4303a3",
+                        fontFamily: "'Roboto', sans-serif",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      LKR {shippingFee.toFixed(2)}
+                    </p>
+                  </div>
+                )}
+
+              {requiredProduct?.variantCombinationList?.length === 0 && (
+                <div style={{ width: "100%", display: "flex" }}>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#888794",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                    }}
+                  >
+                    Total
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "black",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    LKR{" "}
+                    {(
+                      Number(product?.price) * Number(count) +
+                        Number(shippingFee) || 0
+                    ).toFixed(2)}
+                  </p>
+                </div>
+              )}
+
+              {deliveryAddress && (
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "#db3502",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    *This order will be shipped to below address
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "0.5rem",
+                      color: "black",
+                      fontFamily: "'Roboto', sans-serif",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <i>{deliveryAddress}</i>
+                  </p>
+                </div>
+              )}
+
+
+              {/* place order button */}
+
+
+
+
+
+            </section>
+
+            <section className="user-product-page-box-c">
+             
+
+              <Autocomplete
+                disablePortal
+                id="free-solo-demo"
+                onInputChange={handleChange}
+                value={inputValue}
+                freeSolo
+                size="small"
+                options={predictions?.map((option: any) => option?.description)}
+                sx={{ width: "100%" }}
+                renderInput={(params: any) => (
+                  <TextField {...params} label="Delivery Address" />
+                )}
+              />
+
+              <div style={{ marginTop: "1rem", width: "100%" }}>
+                <MapComponent />
+              </div>
+            </section>
+
+
+
+          </div>
+        </div>
+      )}
+
+
+
+
     </>
   );
 };

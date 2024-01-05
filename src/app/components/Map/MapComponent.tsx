@@ -11,14 +11,14 @@ const MapComponent = () => {
   const markerRef: any = useRef(null);
 
   useEffect(() => {
-    const loader = new Loader({
-      apiKey: "AIzaSyAjGMHi8Zh76yU9sjcukALxeyDy8GyDkik", // Replace with your API key
+    const loader:any = new Loader({
+      apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`, // Replace with your API key
       version: "weekly", // Or any other supported version
     });
 
     loader
       .load()
-      .then((google) => {
+      .then((google:any) => {
         const map: any = new google.maps.Map(mapRef.current, {
           center: { lat: 6.9271, lng: 79.8612 }, // Initial center (San Francisco)
           zoom: 8,
