@@ -301,12 +301,14 @@ export default function Login() {
           <input
             className="input-box"
             placeholder="Email"
+            id="email"
             type="text"
             style={{ marginBottom: "1rem" }}
             value={email}
             onChange={handleEmailChange}
           />
           <PasswordInput
+            
             placeholder={"Password"}
             setPassword={setPassword}
             password={password}
@@ -320,7 +322,8 @@ export default function Login() {
               justifyContent: "center",
             }}
           >
-            <button onClick={loginClick} className="login-button">Login</button>
+            <button onClick={loginClick} id="loginbutton"
+            className="login-button">Login</button>
           </div>
 
           <div

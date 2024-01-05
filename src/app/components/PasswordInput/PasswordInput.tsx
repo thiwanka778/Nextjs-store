@@ -19,6 +19,7 @@ const PasswordInput = (props:any) => {
   return (
     <div className='password-input'>
         <input 
+        id="password"
         value={props.password}
         onChange={handleChangePassword}
         className='password-input-box' 
