@@ -206,8 +206,8 @@ const HomeNav = () => {
                 {
                   cartListArray?.map((item:any,index:number)=>{
                     return (
-           <div>           
-             <div className="cart-items-big-box" key={index}
+           <div key={index}>           
+             <div className="cart-items-big-box" 
                 style={{margin:'0.5rem',padding:'0.5rem',position:'relative',
                 boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                 borderRadius:'8px',display:'flex',alignItems:'center', }}>
