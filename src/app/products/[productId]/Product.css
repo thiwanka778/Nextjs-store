@@ -81,3 +81,30 @@
   .checkout-btn:active{
     transform: scale(0.7);
   }
+
+  .add-to-cart-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Ubuntu', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: 0.1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #b83202; /* Change the color to your preference */
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  /* Button hover styles */
+  .add-to-cart-button:hover {
+    background-color: #852503; /* Change this color to your preference */
+    color: #fff; /* Change this color to your preference */
+  }
+  
+.add-to-cart-button:active{
+    transform: scale(0.7);
+}

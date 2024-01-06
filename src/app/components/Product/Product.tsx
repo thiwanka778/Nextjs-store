@@ -4,9 +4,9 @@ import './Product.css';
 import moment from 'moment';
 import { Rate } from "antd";
 import { useRouter } from "next/navigation";
-
-
-
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 
 const Product = ({item}:any) => {
@@ -16,6 +16,15 @@ const userFriendlyDate:any|string|null = moment(item?.createdDate).fromNow();
 
   return (
     <div className='product-card'  >
+
+      <span style={{width:'fit-content',position:'absolute',right:"0.6rem",top:'0.5rem',}}>
+      <Tooltip title="Add to favorite">
+  <IconButton>
+  <FavoriteIcon sx={{color:'red'}}/>
+  </IconButton>
+</Tooltip>
+        
+      </span>
 
         <img    onClick={()=>router.push(`/products/${item?.id}`)}  
         className='product-image-style' src={item?.productImageList[0]?.productImageUrl} 

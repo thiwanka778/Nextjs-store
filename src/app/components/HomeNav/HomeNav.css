@@ -77,3 +77,53 @@
     text-decoration: none;
   }
 
+  .cart-icon{
+    position: relative;
+    z-index: 999999999;
+  
+    
+  }
+
+  .cart-icon-card{
+    overflow-y: auto;
+    width:300px;
+    background-color: #f7f7fa;
+    position: absolute;
+    z-index: 99999999999;
+    left: calc(70% - 300px);
+    display: none;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .cart-icon:hover .cart-icon-card{
+    display: block;
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+
+  .cart-items-big-box{
+    position: relative;
+  }
+
+  .cart-items-little-box{
+    background-color: white;
+    margin:0.5rem;
+    padding:0.5rem;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 8px;
+  
+  }
+
+  .rotated {
+    transform: rotate(90deg);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .default {
+    transition: transform 0.3s ease-in-out;
+  }
+

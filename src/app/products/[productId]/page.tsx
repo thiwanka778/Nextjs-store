@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import "./Product.css";
 import { useDispatch, useSelector } from "react-redux";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import { getProductById } from "@/redux/features/productSlice";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -12,6 +14,8 @@ import { BASE_URL } from "@/redux/apiService";
 import axios from "axios";
 import MapComponent from "@/app/components/Map/MapComponent";
 import { getLocation } from "@/redux/features/userSlice";
+import { createCartItems, resetCart } from "@/redux/features/cartSlice";
+import SnackBar from "@/app/components/SnackBar/SnackBar";
 
 type Params = {
   params: {
@@ -50,9 +54,13 @@ interface ProductImageType {
 const ProductDetails = ({ params: { productId } }: Params) => {
   const dispatch = useDispatch();
   const { user, lat, lng } = useSelector((state: any) => state.user);
+  const { cartLoading,
+    createCartStatus,
+    createCartErrorMessage,}=useSelector((state:any)=>state.cart);
   const [product, setProduct] = useState<ProductType | null | any>(null);
   const [text, setText] = useState<string>("");
   const [isCheckOut,setIsCheckOut]=useState<boolean>(false);
+  const [createCartSuccess,setCreateCartSuccess]=useState(false);
   const [isSelectedAdded, setIsSelectedAdded] = useState(false);
   const [selectedOption, setSelectedOption] = useState<any | null | string>("");
   const [productImages, setProductImages] = useState<any[]>([]);
@@ -77,7 +85,7 @@ const ProductDetails = ({ params: { productId } }: Params) => {
     (state: any) => state.product
   );
 
-  console.log("LAT PAMKA", lat, lng);
+  // console.log("LAT PAMKA", lat, lng);
 
   //  console.log("distanceInfo",distanceInfo)
 
@@ -206,7 +214,7 @@ const ProductDetails = ({ params: { productId } }: Params) => {
     let sentence: string = `You have selected ${product?.name}, `;
 
     optionKeys?.forEach((key: any, index: number) => {
-      sentence += ` ${key.toLowerCase()} is ${options[key]}`;
+      sentence += `${key.toLowerCase()} is ${options[key]}`;
       if (index !== optionKeys.length - 1) {
         sentence += " and";
       } else {
@@ -453,10 +461,7 @@ const ProductDetails = ({ params: { productId } }: Params) => {
   };
 
   React.useEffect(() => {
-   
       getPlaceIdFromLatLng(lat, lng);
-    
-    
   }, [lat, lng]);
 
   const getGeoLocation = async (address: any) => {
@@ -571,6 +576,52 @@ const ProductDetails = ({ params: { productId } }: Params) => {
   const checkoutClick=()=>{
     setIsCheckOut(true);
   }
+
+  const addToCartClick=()=>{
+    if(product?.variantCombinationList?.length===0 && product?.quantity>=1){
+      const payload:any ={
+        "productId": product?.id,
+        "quantity": count,
+        "price": product?.price,
+        "name": product?.name,
+        "description": product?.description,
+        "storeId": product?.storeId,
+      }
+      dispatch(createCartItems(payload))
+    }else if(selectedOption && selectedOption?.quantity>=1){
+      const payload:any ={
+        "productId": product?.id,
+        "quantity": count,
+        "price": selectedOption?.price,
+        "name": product?.name,
+        "description": text,
+        "storeId": product?.storeId,
+      }
+      dispatch(createCartItems(payload))
+    }
+ 
+  };
+
+  React.useEffect(()=>{
+
+    if(cartLoading===false){
+       if(createCartStatus===true){
+          dispatch(resetCart())
+          setCreateCartSuccess(true);
+       }else if(createCartStatus===false && createCartErrorMessage==="Unauthorized"){
+        setCreateCartSuccess(false);
+        dispatch(resetCart())
+       }else if(createCartStatus===false && createCartErrorMessage==="Internal Server Error"){
+        setCreateCartSuccess(false);
+        dispatch(resetCart())
+       }
+    }
+
+  },[cartLoading]);
+
+
+
+  console.log("PRODUCT : ",product)
 
   return (
     <>
@@ -1181,7 +1232,19 @@ const ProductDetails = ({ params: { productId } }: Params) => {
               </div>
 
               <div style={{ marginTop: "1rem", width: "100%" ,display:'flex',alignItems:'center',justifyContent:'flex-end'}}>
-              <button onClick={checkoutClick} className="checkout-btn">CHECKOUT</button>
+
+
+              {  requiredProduct?.variantCombinationList?.length===0 && product?.quantity>=1 && 
+              <button className="add-to-cart-button" onClick={addToCartClick} >ADD TO CART</button>}
+
+              { selectedOption && selectedOption?.quantity>=1 && 
+              <button className="add-to-cart-button" onClick={addToCartClick} >ADD TO CART</button>}
+
+             {requiredProduct?.variantCombinationList?.length===0 && product?.quantity>=1 && 
+             <button onClick={checkoutClick} className="checkout-btn" style={{marginLeft:"0.5rem"}}>CHECKOUT</button>}
+
+             {selectedOption && selectedOption?.quantity>=1 && 
+             <button onClick={checkoutClick} className="checkout-btn" style={{marginLeft:"0.5rem"}}>CHECKOUT</button>}
               </div>
 
             </section>
@@ -1779,6 +1842,22 @@ const ProductDetails = ({ params: { productId } }: Params) => {
 
 
 
+
+      {createCartSuccess && <SnackBar
+          severity="success"
+          message={`Product added to cart`}
+          open={createCartSuccess}
+          setOpen={setCreateCartSuccess}
+        />}
+
+
+
+<Backdrop
+        sx={{ color: "#ffd700", zIndex: "9999999999999" }}
+        open={cartLoading}
+      >
+        <CircularProgress color="inherit" size={50} />
+      </Backdrop>
 
     </>
   );

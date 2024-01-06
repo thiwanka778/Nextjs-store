@@ -373,9 +373,9 @@ const ProductPage = ({ params: { productId } }: Params) => {
   const handleVariantCombinationChange = (index:number, field:string, value:any) => {
     let updatedVariantCombination:any = [...variantCombination];
   if(field==='price'){
-    updatedVariantCombination[index].price=value?isNaN(value)?updatedVariantCombination[index].price:Number(value):'';
+    updatedVariantCombination[index].price=value?.trim()!==''?isNaN(value)?updatedVariantCombination[index].price:Number(value):'';
   }else if(field === 'quantity'){
-    updatedVariantCombination[index].quantity=value?isNaN(value)?updatedVariantCombination[index].quantity:Number(value)>=0?parseInt(value):updatedVariantCombination[index].quantity:'';
+    updatedVariantCombination[index].quantity=value?.trim()!==''?isNaN(value)?updatedVariantCombination[index].quantity:Number(value)>=0?parseInt(value):updatedVariantCombination[index].quantity:'';
   }else{
     updatedVariantCombination[index][field] = value;
   }
@@ -394,7 +394,7 @@ const ProductPage = ({ params: { productId } }: Params) => {
               <p style={{fontFamily: "'Roboto', sans-serif",marginBottom:'1rem',fontWeight:'bold',}}>{item?.name}</p>
                     <TextField  label="Price" size="small" 
                           name="price"
-                          value={item.price}  // Bind the value from state
+                          value={item?.price}  // Bind the value from state
                           onChange={(e) => handleVariantCombinationChange(index, 'price', e.target.value)} 
                         variant="outlined" sx={{marginBottom:"1rem",width:'100%'}} />
   
